@@ -1,0 +1,2 @@
+<?php
+return array('renderUrl'=>'https://api.github.com/markdown/raw');
