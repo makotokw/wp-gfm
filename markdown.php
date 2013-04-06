@@ -31,23 +31,29 @@ class WP_GFM
 		$this->agent = self::NAME . '/' . self::VERSION;
 		$wpurl = (function_exists('site_url')) ? site_url() : get_bloginfo('wpurl');
 		$this->url = $wpurl . '/wp-content/plugins/' . end(explode(DIRECTORY_SEPARATOR, dirname(__FILE__)));
-		// add_action('wp_head', array($this,'head'));
+
 		add_action('the_content', array($this, 'the_content'), 7);
 		add_filter('edit_page_form', array($this, 'edit_form_advanced')); // for page
 		add_filter('edit_form_advanced', array($this, 'edit_form_advanced')); // for post
 		wp_enqueue_style('gfm', $this->url . '/css/pygments.css', array(), self::VERSION);
 	}
 
-	function head()
+	function shortcode_gfm($atts, $content='')
 	{
-		?>
-	<?php
+		return '<div class="markdown_content">' . $this->convert_html_by_render_url($this->renderUrl, $content). '</div>';
 	}
 
-	function the_content($str)
+	function shortcode_markdown($atts, $content='')
+	{
+		return '<div class="markdown_content">' . \Michelf\MarkdownExtra::defaultTransform($content) . '</div>';
+	}
+
+	function the_content($content)
 	{
 		$replace = 'return wp_markdown($matches[2]);';
-		return preg_replace_callback('/\[(md|markdown)\](.*?)\[\/(md|markdown)\]/s', create_function('$matches', $replace), $str);
+		$content = preg_replace_callback('/\[markdown\](.*?)\[\/markdown\]/s', create_function('$matches', 'return wp_markdown($matches[1]);'), $content);
+		$content = preg_replace_callback('/\[gfm\](.*?)\[\/gfm\]/s', create_function('$matches', 'return wp_fgm($matches[1]);'), $content);
+		return $content;
 	}
 
 function edit_form_advanced() {
@@ -55,20 +61,6 @@ function edit_form_advanced() {
 	<script type="text/javascript" src="<?php echo $this->url ?>/admin.js"></script>
 <?php
 }
-
-	function convert($text)
-	{
-		return '<div class="markdown_content">' . $this->convert_html($text) . '</div>';
-	}
-
-	function convert_html($text)
-	{
-		if (empty($this->renderUrl)) {
-			return \Michelf\MarkdownExtra::defaultTransform($text);
-		} else {
-			return $this->convert_html_by_render_url($this->renderUrl, $text);
-		}
-	}
 
 	function convert_html_by_render_url($renderUrl, $text)
 	{
@@ -108,8 +100,18 @@ if (file_exists(dirname(__FILE__) . '/vendor/autoload.php')) {
 	$loader = require_once dirname(__FILE__) . '/vendor/autoload.php';
 }
 
-function wp_markdown($text)
+function wp_markdown($content)
 {
 	$p = WP_GFM::getInstance();
-	return $p->convert($text);
+	return $p->shortcode_markdown(null, $content);
+}
+
+function wp_fgm($content)
+{
+	$p = WP_GFM::getInstance();
+	if (!empty($p->renderUrl)) {
+		return $p->shortcode_gfm(null, $content);
+	} else {
+		return $p->shortcode_markdown(null, $content);
+	}
 }
