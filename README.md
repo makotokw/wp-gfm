@@ -71,3 +71,7 @@ Use ``[gfm][/gfm]`` as shortcode on entry.
     [/gfm]
 
 ![Result](https://dl.dropbox.com/u/8932138/screenshot/wp-gfm/wp-gfm_2013-01-15_1927.png)
+
+## LICENSE
+
+The MIT License
