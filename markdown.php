@@ -1,11 +1,11 @@
 <?php
 /*
- Plugin Name: Github Flavored Markdown for WordPress
+ Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
  Version: 0.1
  Description: Converts block in GitHub Flavored Markdown by using shortcode [gfm]
  Author: makoto_kw
- Author URI: http://www.makotokw.com/
+ Author URI: http://makotokw.com/
  */
 
 class WP_GFM

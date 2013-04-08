@@ -1,6 +1,6 @@
-# Github Flavored Markdown for WordPress
+# GitHub Flavored Markdown for WordPress
 
-wp-gfm is the WordPress plugin that convert from Github Flavored Markdown by using the [Github Render API](http://developer.github.com/v3/markdown/).
+wp-gfm is the WordPress plugin that convert from GitHub Flavored Markdown by using the [GitHub Render API](http://developer.github.com/v3/markdown/).
 
 ## Dependencies
 
@@ -8,7 +8,7 @@ wp-gfm is the WordPress plugin that convert from Github Flavored Markdown by usi
  * Git
  * PHP 5.3+
  * [Composer](http://getcomposer.org/)
- * Render API: [Github Render API](http://developer.github.com/v3/markdown/) or https://github.com/makotokw/ruby-markdown-render-api
+ * Render API: [GitHub Render API](http://developer.github.com/v3/markdown/) or https://github.com/makotokw/ruby-markdown-render-api
 
 ## How to work
 
@@ -16,7 +16,7 @@ The plugin has two convertion.
 
 ``[markdown]`` as shortcode for PHP-Markdown, convert by using ``\Michelf\Markdown`` class inside WordPress. 
 
-``[gfm]`` as shortcode for Github Flavored Markdown, convert by using the Render API outside WordPress. Default Render API is Github Render API, limits requests to 60 per hour for unauthenticated requests. Alternatives Render API that works on heroku is here:
+``[gfm]`` as shortcode for GitHub Flavored Markdown, convert by using the Render API outside WordPress. Default Render API is GitHub Render API, limits requests to 60 per hour for unauthenticated requests. Alternatives Render API that works on heroku is here:
 https://github.com/makotokw/ruby-markdown-render-api
 
 
@@ -47,7 +47,7 @@ Use ``[markdown][/markdown]`` as shortcode on entry.
     | Content Cell  | Content Cell  |
     [/markdown]
 
-## Github Flavored Markdown
+## GitHub Flavored Markdown
 
 ### Setup
 
@@ -61,8 +61,6 @@ Edit config.php.
 Use ``[gfm][/gfm]`` as shortcode on entry.
 
     [gfm]
-    # code
-    
     ```ruby
     require 'redcarpet'
     markdown = Redcarpet.new("Hello World!")
@@ -70,7 +68,10 @@ Use ``[gfm][/gfm]`` as shortcode on entry.
     ```
     [/gfm]
 
-![Result](https://dl.dropbox.com/u/8932138/screenshot/wp-gfm/wp-gfm_2013-01-15_1927.png)
+
+## Result
+
+![Result](https://dl.dropbox.com/u/8932138/screenshot/wp-gfm/wp-gfm_2013-04-08_2027.png)
 
 ## LICENSE
 
