@@ -40,12 +40,12 @@ class WP_GFM
 
 	function shortcode_gfm($atts, $content='')
 	{
-		return '<div class="markdown_content">' . $this->convert_html_by_render_url($this->renderUrl, $content). '</div>';
+		return '<div class="gfm-content">' . $this->convert_html_by_render_url($this->renderUrl, $content). '</div>';
 	}
 
 	function shortcode_markdown($atts, $content='')
 	{
-		return '<div class="markdown_content">' . \Michelf\MarkdownExtra::defaultTransform($content) . '</div>';
+		return '<div class="markdown-content">' . \Gfm\Markdown\Extra::defaultTransform($content) . '</div>';
 	}
 
 	function the_content($content)
