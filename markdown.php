@@ -67,6 +67,7 @@ function edit_form_advanced() {
 		$response = wp_remote_request($renderUrl,
 			array(
 				'method' => 'POST',
+				'timeout' => 10,
 				'user-agent' => $this->agent,
 				'headers' => array('Content-Type' => 'text/plain; charset=UTF-8'),
 				'body' => $text,
