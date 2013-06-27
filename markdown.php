@@ -2,8 +2,8 @@
 /*
  Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
- Version: 0.1
- Description: Converts block in GitHub Flavored Markdown by using shortcode [gfm]
+ Version: 0.2
+ Description: Converts block in GitHub Flavored Markdown by using shortcode [gfm] and support PHP-Markdown by using shortcode [markdown]
  Author: makoto_kw
  Author URI: http://makotokw.com/
  */
@@ -11,11 +11,11 @@
 class WP_GFM
 {
 	const NAME = 'WP_GFM';
-	const VERSION = '0.1';
+	const VERSION = '0.2';
 
-	var $agent = '';
-	var $url = '';
-	var $renderUrl = 'https://api.github.com/markdown/raw';
+	public $agent = '';
+	public $url = '';
+	public $renderUrl = 'https://api.github.com/markdown/raw';
 
 	static function getInstance()
 	{
@@ -50,7 +50,6 @@ class WP_GFM
 
 	function the_content($content)
 	{
-		$replace = 'return wp_markdown($matches[2]);';
 		$content = preg_replace_callback('/\[markdown\](.*?)\[\/markdown\]/s', create_function('$matches', 'return wp_markdown($matches[1]);'), $content);
 		$content = preg_replace_callback('/\[gfm\](.*?)\[\/gfm\]/s', create_function('$matches', 'return wp_fgm($matches[1]);'), $content);
 		return $content;

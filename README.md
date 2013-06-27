@@ -1,5 +1,7 @@
 # GitHub Flavored Markdown for WordPress
 
+hash tag: ``#wp_gfm``
+
 wp-gfm is the WordPress plugin that convert from GitHub Flavored Markdown by using the [GitHub Render API](http://developer.github.com/v3/markdown/).
 
 ## Dependencies
@@ -14,9 +16,9 @@ wp-gfm is the WordPress plugin that convert from GitHub Flavored Markdown by usi
 
 The plugin has two convertion. 
 
-``[markdown]`` as shortcode for PHP-Markdown, convert by using ``\Michelf\Markdown`` class inside WordPress. 
+``[markdown]`` as shortcode for PHP-Markdown, convert by using ``\Michelf\Markdown`` class **inside WordPress**.
 
-``[gfm]`` as shortcode for GitHub Flavored Markdown, convert by using the Render API outside WordPress. Default Render API is GitHub Render API, limits requests to 60 per hour for unauthenticated requests. Alternatives Render API that works on heroku is here:
+``[gfm]`` as shortcode for GitHub Flavored Markdown, convert by using the Render API **outside WordPress**. Default Render API is GitHub Render API, limits requests to 60 per hour for unauthenticated requests. Alternatives Render API that works on heroku is here:
 https://github.com/makotokw/ruby-markdown-render-api
 
 
@@ -27,11 +29,18 @@ Use git
     cd /path/to/wp-content/plugins
     git clone git://github.com/makotokw/wp-gfm.git
 
+
+## Update
+
+    cd /path/to/wp-content/plugins/wp-gfm
+    git pull origin master
+    composer update
+
 ## PHP-Markdown
 
 ### Setup
 
-Use Composer.
+Use [Composer](http://getcomposer.org/).
 
     cd /path/to/wp-content/plugins/wp-gfm
     composer install
