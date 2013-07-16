@@ -2,7 +2,7 @@
 /*
  Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
- Version: 0.2
+ Version: 0.3
  Description: Converts block in GitHub Flavored Markdown by using shortcode [gfm] and support PHP-Markdown by using shortcode [markdown]
  Author: makoto_kw
  Author URI: http://makotokw.com/
@@ -11,11 +11,12 @@
 class WP_GFM
 {
 	const NAME = 'WP_GFM';
-	const VERSION = '0.2';
+	const VERSION = '0.3';
 
 	public $agent = '';
 	public $url = '';
 	public $renderUrl = 'https://api.github.com/markdown/raw';
+	public $hasConverter = false;
 
 	static function getInstance()
 	{
@@ -45,7 +46,11 @@ class WP_GFM
 
 	function shortcode_markdown($atts, $content='')
 	{
-		return '<div class="markdown-content">' . \Gfm\Markdown\Extra::defaultTransform($content) . '</div>';
+		if ($this->hasConverter) {
+			return '<div class="markdown-content">' . \Gfm\Markdown\Extra::defaultTransform($content) . '</div>';
+		}
+		return $content;
+
 	}
 
 	function the_content($content)
@@ -87,17 +92,28 @@ function edit_form_advanced() {
 	}
 }
 
-WP_GFM::getInstance();
+add_action('init', 'wp_gfm_init');
 
-if (file_exists(dirname(__FILE__) . '/config.php')) {
-	$config = require(dirname(__FILE__) . '/config.php');
-	WP_GFM::getInstance()->renderUrl = $config['renderUrl'];
-	unset($config);
-}
+function wp_gfm_init()
+{
+	WP_GFM::getInstance();
 
-// use Michelf/Markdown
-if (file_exists(dirname(__FILE__) . '/vendor/autoload.php')) {
-	$loader = require_once dirname(__FILE__) . '/vendor/autoload.php';
+	if (file_exists(dirname(__FILE__) . '/config.php')) {
+		$config = require(dirname(__FILE__) . '/config.php');
+		WP_GFM::getInstance()->renderUrl = $config['renderUrl'];
+		unset($config);
+	}
+
+	// use Michelf/Markdown if PHP 5.3+
+	if (defined('PHP_VERSION_ID')) {
+		if (PHP_VERSION_ID >= 50300) {
+			if (file_exists(dirname(__FILE__) . '/vendor/autoload.php')) {
+				require_once dirname(__FILE__) . '/vendor/autoload.php';
+				WP_GFM::getInstance()->hasConverter = true;
+			}
+		}
+	}
+
 }
 
 function wp_markdown($content)

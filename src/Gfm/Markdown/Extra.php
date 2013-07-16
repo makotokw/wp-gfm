@@ -2,6 +2,8 @@
 
 namespace Gfm\Markdown;
 
+use Gfm\Pygments;
+
 \Michelf\Markdown::MARKDOWNLIB_VERSION;
 
 
@@ -11,13 +13,12 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 	public function __construct()
 	{
 		parent::__construct();
+	}
 
-		$this->document_gamut += array(
-			"doGfmCodeBlocks" => 5,
-		);
-		$this->block_gamut += array(
-			"doGfmCodeBlocks" => 5,
-		);
+	protected function hashHTMLBlocks($text)
+	{
+		$text = $this->doGfmCodeBlocks($text);
+		return parent::hashHTMLBlocks($text);
 	}
 
 	protected function doGfmCodeBlocks($text)
@@ -33,19 +34,13 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 
 		$text = preg_replace_callback('{
 				(?:\n|\A)
-				# 1: Opening marker
-				(
-					`{3} # Marker: three `.
-				)
-				[ ]*
-				(?:
-					\.?([-_:a-zA-Z0-9]+) # 2: standalone class name
-				|
-					' . $this->id_class_attr_catch_re . ' # 3: Extra attributes
-				)?
+				# 1: Opening marker three `.
+				(`{3})
+
+				(|.+) # 2: Language:title
 				[ ]* \n # Whitespace and newline following marker.
 
-				# 4: Content
+				# 3: Content
 				(
 					(?>
 						(?!\1 [ ]* \n)	# Not a closing marker.
@@ -64,24 +59,34 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 
 	protected function _doGfmCodeBlocks_callback($matches)
 	{
-		$classname =& $matches[2];
-		$attrs =& $matches[3];
-		$codeblock = $matches[4];
+		$option = $matches[2];
+		$codeblock = $matches[3];
+
+		list ($language, $title) = explode(':', $option);
+
 		$codeblock = htmlspecialchars($codeblock, ENT_NOQUOTES);
+
+
+		// TODO
+//		if ($code = Pygments::pygmentize($codeblock)) {
+//			return $code;
+//		}
+
 		$codeblock = preg_replace_callback('/^\n+/',
 			array(&$this, '_doGfmCodeBlocks_newlines'), $codeblock);
 
-		if ($classname != "") {
-			if ($classname{0} == '.')
-				$classname = substr($classname, 1);
-			$attr_str = ' class="' . $this->code_class_prefix . $classname . '"';
-		} else {
-			$attr_str = $this->doExtraAttributes("pre", $attrs);
+		$class = 'prettyprint';
+		if (!empty($language)) {
+			if ($language == 'bash') $language = 'bsh';
+			$class .= ' lang-'.$language;
 		}
+		$attr_str = ' class="'.$class.'"';
+		if (!empty($title)) {
+			$attr_str .= ' title="'.$title.'"';
+		}
+		$block = "<pre$attr_str>$codeblock</pre>";
 
-		$attr_str = ' class="prettyprint"';
-		$codeblock = "<pre$attr_str>$codeblock</pre>";
-		return "\n\n" . $this->hashBlock($codeblock) . "\n\n";
+		return "\n\n" . $this->hashBlock($block) . "\n\n";
 	}
 
 	protected function _doGfmCodeBlocks_newlines($matches)

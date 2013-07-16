@@ -2,15 +2,14 @@
 
 hash tag: ``#wp_gfm``
 
-wp-gfm is the WordPress plugin that convert from GitHub Flavored Markdown by using the [GitHub Render API](http://developer.github.com/v3/markdown/).
+wp-gfm is the WordPress plugin that convert from GitHub Flavored Markdown by using the PHP-Markdown or [GitHub Render API](http://developer.github.com/v3/markdown/).
 
 ## Dependencies
 
  * WordPress
  * Git
  * PHP 5.3+
- * [Composer](http://getcomposer.org/)
- * Render API: [GitHub Render API](http://developer.github.com/v3/markdown/) or https://github.com/makotokw/ruby-markdown-render-api
+ * Optional: Render API: [GitHub Render API](http://developer.github.com/v3/markdown/) or https://github.com/makotokw/ruby-markdown-render-api
 
 ## How to work
 
@@ -18,8 +17,7 @@ The plugin has two convertion.
 
 ``[markdown]`` as shortcode for PHP-Markdown, convert by using ``\Michelf\Markdown`` class **inside WordPress**.
 
-``[gfm]`` as shortcode for GitHub Flavored Markdown, convert by using the Render API **outside WordPress**. Default Render API is GitHub Render API, limits requests to 60 per hour for unauthenticated requests. Alternatives Render API that works on heroku is here:
-https://github.com/makotokw/ruby-markdown-render-api
+``[gfm]`` as shortcode for GitHub Flavored Markdown, convert by using the Render API **outside WordPress**. Default Render API is GitHub Render API, limits requests to 60 per hour for unauthenticated requests. Alternatives Render API that works on heroku is here: https://github.com/makotokw/ruby-markdown-render-api
 
 
 ## Installation
@@ -34,16 +32,8 @@ Use git
 
     cd /path/to/wp-content/plugins/wp-gfm
     git pull origin master
-    composer update
 
-## PHP-Markdown
-
-### Setup
-
-Use [Composer](http://getcomposer.org/).
-
-    cd /path/to/wp-content/plugins/wp-gfm
-    composer install
+## PHP-Markdown (Recommended)
 
 ### Usage
 
@@ -56,7 +46,26 @@ Use ``[markdown][/markdown]`` as shortcode on entry.
     | Content Cell  | Content Cell  |
     [/markdown]
 
-## GitHub Flavored Markdown
+Since version 0.2, it supported **Fenced code blocks**.
+
+    [markdown]
+    ```ruby
+    require 'redcarpet'
+    markdown = Redcarpet.new("Hello World!")
+    puts markdown.to_html
+    ```
+    [/markdown]
+
+Output
+
+    <pre class="prettyprint lang-ruby">require 'redcarpet'
+    markdown = Redcarpet.new("Hello World!")
+    puts markdown.to_html
+    </pre>
+
+You sholud use [google-code-prettify](https://code.google.com/p/google-code-prettify/) if you want to allows syntax highlighting.
+
+## GitHub Render API
 
 ### Setup
 
