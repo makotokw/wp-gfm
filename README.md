@@ -1,13 +1,10 @@
 # GitHub Flavored Markdown for WordPress
 
-hash tag: ``#wp_gfm``
-
 wp-gfm is the WordPress plugin that convert from GitHub Flavored Markdown by using the PHP-Markdown or [GitHub Render API](http://developer.github.com/v3/markdown/).
 
 ## Dependencies
 
  * WordPress
- * Git
  * PHP 5.3+
  * Optional: Render API: [GitHub Render API](http://developer.github.com/v3/markdown/) or https://github.com/makotokw/ruby-markdown-render-api
 
