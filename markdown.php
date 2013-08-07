@@ -31,7 +31,7 @@ class WP_GFM
 	{
 		$this->agent = self::NAME . '/' . self::VERSION;
 		$wpurl = (function_exists('site_url')) ? site_url() : get_bloginfo('wpurl');
-		$this->url = $wpurl . '/wp-content/plugins/' . end(explode(DIRECTORY_SEPARATOR, dirname(__FILE__)));
+		$this->url = $wpurl . '/wp-content/plugins/' . basename(dirname(__FILE__));
 
 		add_action('the_content', array($this, 'the_content'), 7);
 		add_filter('edit_page_form', array($this, 'edit_form_advanced')); // for page

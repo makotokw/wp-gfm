@@ -62,7 +62,7 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 		$option = $matches[2];
 		$codeblock = $matches[3];
 
-		list ($language, $title) = explode(':', $option);
+		@list ($language, $title) = explode(':', $option);
 
 		$codeblock = htmlspecialchars($codeblock, ENT_NOQUOTES);
 
