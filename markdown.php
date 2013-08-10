@@ -12,11 +12,12 @@ class WP_GFM
 {
 	const NAME = 'WP_GFM';
 	const VERSION = '0.3';
+	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
 	public $agent = '';
 	public $url = '';
-	public $renderUrl = 'https://api.github.com/markdown/raw';
 	public $hasConverter = false;
+	public $gfmOptions = array();
 
 	static function getInstance()
 	{
@@ -33,18 +34,97 @@ class WP_GFM
 		$wpurl = (function_exists('site_url')) ? site_url() : get_bloginfo('wpurl');
 		$this->url = $wpurl . '/wp-content/plugins/' . basename(dirname(__FILE__));
 
+		$this->gfmOptions = wp_parse_args((array)get_option('gfm'), array(
+			'render_url' => self::DEFAULT_RENDER_URL
+		));
+
 		add_action('the_content', array($this, 'the_content'), 7);
 		add_filter('edit_page_form', array($this, 'edit_form_advanced')); // for page
 		add_filter('edit_form_advanced', array($this, 'edit_form_advanced')); // for post
 		wp_enqueue_style('gfm', $this->url . '/css/pygments.css', array(), self::VERSION);
+
+		if (is_admin()) {
+			add_action('admin_init', array($this, 'admin_init'));
+			add_action('admin_menu', array($this, 'admin_menu'));
+		}
 	}
 
-	function shortcode_gfm($atts, $content='')
+	function admin_init()
 	{
-		return '<div class="gfm-content">' . $this->convert_html_by_render_url($this->renderUrl, $content). '</div>';
+		register_setting('gfm_option_group', 'gfm', array($this, 'option_gfm'));
+
+		add_settings_section(
+			'setting_section_gfm',
+			'GitHub Flavored Markdown',
+			array($this, 'print_section_gfm'),
+			'gfm-setting-admin'
+		);
+
+		add_settings_field(
+			'render_url',
+			'Render URL',
+			array($this, 'create_gfm_render_url_field'),
+			'gfm-setting-admin',
+			'setting_section_gfm'
+		);
 	}
 
-	function shortcode_markdown($atts, $content='')
+	function admin_menu()
+	{
+		if (function_exists('add_options_page')) {
+			add_options_page(
+				'GFM Plugin Settings',
+				'WP GFM',
+				'manage_options',
+				'wp-gfm',
+				array($this, 'options_page')
+			);
+		}
+	}
+
+	function options_page()
+	{
+	?>
+	<div class="wrap">
+		<?php screen_icon(); ?>
+		<h2>Settings</h2>
+		<form method="post">
+			<?php
+			settings_fields('gfm_option_group');
+			do_settings_sections( 'gfm-setting-admin' );
+			?>
+			<?php submit_button(); ?>
+		</form>
+	</div>
+	<?php
+	}
+
+	function option_gfm($input)
+	{
+		if (get_option('gfm') === false) {
+			add_option('gfm', $input);
+		} else {
+			update_option('gfm', $input);
+		}
+		return $input;
+	}
+
+	function print_section_gfm()
+	{
+	}
+
+	function create_gfm_render_url_field() {
+	?><input type="text" id="gfm_render_url" name="gfm[render_url]"
+			 value="<?php echo $this->gfmOptions['render_url'] ?>" class="regular-text"/><?php
+}
+
+	function shortcode_gfm($atts, $content = '')
+	{
+		$renderUrl = @$this->gfmOptions['render_url'];
+		return '<div class="gfm-content">' . $this->convert_html_by_render_url($renderUrl, $content) . '</div>';
+	}
+
+	function shortcode_markdown($atts, $content = '')
 	{
 		if ($this->hasConverter) {
 			return '<div class="markdown-content">' . \Gfm\Markdown\Extra::defaultTransform($content) . '</div>';
@@ -60,11 +140,12 @@ class WP_GFM
 		return $content;
 	}
 
-function edit_form_advanced() {
-	?>
-	<script type="text/javascript" src="<?php echo $this->url ?>/admin.js"></script>
-<?php
-}
+	function edit_form_advanced()
+	{
+		?>
+		<script type="text/javascript" src="<?php echo $this->url ?>/admin.js"></script>
+	<?php
+	}
 
 	function convert_html_by_render_url($renderUrl, $text)
 	{
@@ -96,20 +177,14 @@ add_action('init', 'wp_gfm_init');
 
 function wp_gfm_init()
 {
-	WP_GFM::getInstance();
-
-	if (file_exists(dirname(__FILE__) . '/config.php')) {
-		$config = require(dirname(__FILE__) . '/config.php');
-		WP_GFM::getInstance()->renderUrl = $config['renderUrl'];
-		unset($config);
-	}
+	$plugin = WP_GFM::getInstance();
 
 	// use Michelf/Markdown if PHP 5.3+
 	if (defined('PHP_VERSION_ID')) {
 		if (PHP_VERSION_ID >= 50300) {
 			if (file_exists(dirname(__FILE__) . '/vendor/autoload.php')) {
 				require_once dirname(__FILE__) . '/vendor/autoload.php';
-				WP_GFM::getInstance()->hasConverter = true;
+				$plugin->hasConverter = true;
 			}
 		}
 	}
