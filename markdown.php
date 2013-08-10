@@ -52,7 +52,7 @@ class WP_GFM
 
 	function admin_init()
 	{
-		register_setting('gfm_option_group', 'gfm', array($this, 'option_gfm'));
+		register_setting('gfm_option_group', 'gfm_array', array($this, 'option_sanitize_gfm'));
 
 		add_settings_section(
 			'setting_section_gfm',
@@ -88,8 +88,8 @@ class WP_GFM
 	?>
 	<div class="wrap">
 		<?php screen_icon(); ?>
-		<h2>Settings</h2>
-		<form method="post">
+		<h2>WP GFM Settings</h2>
+		<form method="post" action="options.php">
 			<?php
 			settings_fields('gfm_option_group');
 			do_settings_sections( 'gfm-setting-admin' );
@@ -100,7 +100,7 @@ class WP_GFM
 	<?php
 	}
 
-	function option_gfm($input)
+	function option_sanitize_gfm($input)
 	{
 		if (get_option('gfm') === false) {
 			add_option('gfm', $input);
@@ -115,7 +115,7 @@ class WP_GFM
 	}
 
 	function create_gfm_render_url_field() {
-	?><input type="text" id="gfm_render_url" name="gfm[render_url]"
+	?><input type="text" id="gfm_render_url" name="gfm_array[render_url]"
 			 value="<?php echo $this->gfmOptions['render_url'] ?>" class="regular-text"/><?php
 }
 
