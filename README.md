@@ -55,7 +55,7 @@ Output
     puts markdown.to_html
     </pre>
 
-You sholud use [google-code-prettify](https://code.google.com/p/google-code-prettify/) if you want to allows syntax highlighting.
+You should use [google-code-prettify](https://code.google.com/p/google-code-prettify/) if you want to allow syntax highlighting.
 
 ## GitHub Render API
 
