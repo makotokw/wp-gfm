@@ -191,8 +191,7 @@ function wp_gfm_init()
 	}
 
 	include_once 'updater.php';
-
-	if ( is_admin() ) { // note the use of is_admin() to double check that this is happening in the admin
+	if ( is_admin() && class_exists('WP_GitHub_Updater') ) {
 		new WP_GitHub_Updater(
 			array(
 				'slug' => plugin_basename(__FILE__),
@@ -205,7 +204,6 @@ function wp_gfm_init()
 				'requires' => '3.0',
 				'tested' => '3.6',
 				'readme' => 'README.md',
-				'access_token' => '',
 			)
 		);
 	}
