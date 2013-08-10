@@ -2,16 +2,17 @@
 /*
  Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
- Version: 0.3
+ Version: 0.4
  Description: Converts block in GitHub Flavored Markdown by using shortcode [gfm] and support PHP-Markdown by using shortcode [markdown]
  Author: makoto_kw
  Author URI: http://makotokw.com/
+ License: MIT
  */
 
 class WP_GFM
 {
 	const NAME = 'WP_GFM';
-	const VERSION = '0.3';
+	const VERSION = '0.4';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
 	public $agent = '';
@@ -189,6 +190,25 @@ function wp_gfm_init()
 		}
 	}
 
+	include_once 'updater.php';
+
+	if ( is_admin() ) { // note the use of is_admin() to double check that this is happening in the admin
+		new WP_GitHub_Updater(
+			array(
+				'slug' => plugin_basename(__FILE__),
+				'proper_folder_name' => 'wp-gfm',
+				'api_url' => 'https://api.github.com/repos/makotokw/wp-gfm',
+				'raw_url' => 'https://raw.github.com/makotokw/wp-gfm/master',
+				'github_url' => 'https://github.com/makotokw/wp-gfm',
+				'zip_url' => 'https://github.com/makotokw/wp-gfm/archive/master.zip',
+				'sslverify' => true,
+				'requires' => '3.0',
+				'tested' => '3.6',
+				'readme' => 'README.md',
+				'access_token' => '',
+			)
+		);
+	}
 }
 
 function wp_markdown($content)

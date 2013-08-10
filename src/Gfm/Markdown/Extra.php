@@ -2,10 +2,7 @@
 
 namespace Gfm\Markdown;
 
-use Gfm\Pygments;
-
 \Michelf\Markdown::MARKDOWNLIB_VERSION;
-
 
 class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 {

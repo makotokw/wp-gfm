@@ -25,11 +25,6 @@ Use git
     git clone git://github.com/makotokw/wp-gfm.git
 
 
-## Update
-
-    cd /path/to/wp-content/plugins/wp-gfm
-    git pull origin master
-
 ## PHP-Markdown (Recommended)
 
 ### Usage
@@ -66,10 +61,8 @@ You sholud use [google-code-prettify](https://code.google.com/p/google-code-pret
 
 ### Setup
 
-    cd /path/to/wp-content/plugins/wp-gfm
-    cp -p config.php.sample config.php
+ * Open ``WP GFM`` Settings and set ``Render URL``
 
-Edit config.php.
 
 ### Usage
 
@@ -91,3 +84,9 @@ Use ``[gfm][/gfm]`` as shortcode on entry.
 ## LICENSE
 
 The MIT License
+
+## Current Version
+
+The line below is used for the updater API, please leave it untouched unless bumping the version up :)
+
+~Current Version:0.4~
