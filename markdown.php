@@ -218,7 +218,7 @@ function wp_markdown($content)
 function wp_fgm($content)
 {
 	$p = WP_GFM::getInstance();
-	if (!empty($p->renderUrl)) {
+	if (!empty($p->gfmOptions['render_url'])) {
 		return $p->shortcode_gfm(null, $content);
 	} else {
 		return $p->shortcode_markdown(null, $content);
