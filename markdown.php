@@ -42,12 +42,24 @@ class WP_GFM
 		add_action('the_content', array($this, 'the_content'), 7);
 		add_filter('edit_page_form', array($this, 'edit_form_advanced')); // for page
 		add_filter('edit_form_advanced', array($this, 'edit_form_advanced')); // for post
-		wp_enqueue_style('gfm', $this->url . '/css/pygments.css', array(), self::VERSION);
 
 		if (is_admin()) {
 			add_action('admin_init', array($this, 'admin_init'));
 			add_action('admin_menu', array($this, 'admin_menu'));
+		} else {
+			add_action('wp_enqueue_scripts', array($this, 'wp_enqueue_styles'));
+			add_action('wp_enqueue_scripts', array($this, 'wp_enqueue_scripts'));
 		}
+	}
+
+	function wp_enqueue_styles()
+	{
+		wp_enqueue_style('gfm', $this->url . '/css/pygments.css', array(), self::VERSION);
+	}
+
+	function wp_enqueue_scripts()
+	{
+
 	}
 
 	function admin_init()
