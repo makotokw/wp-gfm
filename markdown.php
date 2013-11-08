@@ -2,7 +2,7 @@
 /*
  Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
- Version: 0.4.1
+ Version: 0.5-beta
  Description: Converts block in GitHub Flavored Markdown by using shortcode [gfm] and support PHP-Markdown by using shortcode [markdown]
  Author: makoto_kw
  Author URI: http://makotokw.com/
@@ -12,7 +12,7 @@
 class WP_GFM
 {
 	const NAME = 'WP_GFM';
-	const VERSION = '0.4.1';
+	const VERSION = '0.5';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
 	public $agent = '';
@@ -36,10 +36,11 @@ class WP_GFM
 		$this->url = $wpurl . '/wp-content/plugins/' . basename(dirname(__FILE__));
 
 		$this->gfmOptions = wp_parse_args((array)get_option('gfm'), array(
-			'render_url' => self::DEFAULT_RENDER_URL
+			'php_md_always_convert' => false,
+			'php_md_use_autolink' => false,
+			'render_url' => self::DEFAULT_RENDER_URL,
 		));
 
-		add_action('the_content', array($this, 'the_content'), 7);
 		add_filter('edit_page_form', array($this, 'edit_form_advanced')); // for page
 		add_filter('edit_form_advanced', array($this, 'edit_form_advanced')); // for post
 
@@ -49,6 +50,20 @@ class WP_GFM
 		} else {
 			add_action('wp_enqueue_scripts', array($this, 'wp_enqueue_styles'));
 			add_action('wp_enqueue_scripts', array($this, 'wp_enqueue_scripts'));
+		}
+	}
+
+	function php_markdown_init()
+	{
+		if (class_exists('\Gfm\Markdown\Extra')) {
+			$this->hasConverter = true;
+			\Gfm\Markdown\Extra::$useAutoLinkExtras = $this->gfmOptions['php_md_use_autolink'] == true;
+		}
+
+		if ($this->gfmOptions['php_md_always_convert']) {
+			add_action('the_content', array($this, 'force_convert'), 7);
+		} else {
+			add_action('the_content', array($this, 'the_content'), 7);
 		}
 	}
 
@@ -65,6 +80,29 @@ class WP_GFM
 	function admin_init()
 	{
 		register_setting('gfm_option_group', 'gfm_array', array($this, 'option_sanitize_gfm'));
+
+		add_settings_section(
+			'setting_section_php_markdown',
+			'PHP Markdown',
+			array($this, 'print_section_php_markdown'),
+			'gfm-setting-admin'
+		);
+
+		add_settings_field(
+			'php_md_always_convert',
+			'',
+			array($this, 'create_gfm_php_md_always_convert_field'),
+			'gfm-setting-admin',
+			'setting_section_php_markdown'
+		);
+
+		add_settings_field(
+			'php_md_use_autolink',
+			'',
+			array($this, 'create_gfm_php_md_use_autolink_field'),
+			'gfm-setting-admin',
+			'setting_section_php_markdown'
+		);
 
 		add_settings_section(
 			'setting_section_gfm',
@@ -122,14 +160,30 @@ class WP_GFM
 		return $input;
 	}
 
+	function print_section_php_markdown()
+	{
+	}
+
+	function create_gfm_php_md_always_convert_field() {
+		echo '<input type="checkbox" id="php_md_always_convert" name="gfm_array[php_md_always_convert] value="1" class="code" '
+			. checked(1, $this->gfmOptions['php_md_always_convert'], false) . ' /> All contents are markdown!'
+			. '<p class="description">The plugin converts content even if it is not surrounded by [markdown]</p>'
+		;
+	}
+
+	function create_gfm_php_md_use_autolink_field() {
+		echo '<input type="checkbox" id="gfm_php_md_use_autolink" name="gfm_array[php_md_use_autolink] value="1" class="code" '
+		. checked(1, $this->gfmOptions['php_md_use_autolink'], false) . ' /> Use AutoLink';
+	}
+
 	function print_section_gfm()
 	{
 	}
 
 	function create_gfm_render_url_field() {
-	?><input type="text" id="gfm_render_url" name="gfm_array[render_url]"
+?><input type="text" id="gfm_render_url" name="gfm_array[render_url]"
 			 value="<?php echo $this->gfmOptions['render_url'] ?>" class="regular-text"/><?php
-}
+	}
 
 	function shortcode_gfm($atts, $content = '')
 	{
@@ -143,7 +197,12 @@ class WP_GFM
 			return '<div class="markdown-content">' . \Gfm\Markdown\Extra::defaultTransform($content) . '</div>';
 		}
 		return $content;
+	}
 
+	function force_convert($content)
+	{
+		$content = preg_replace('{\[/?markdown\]}', '', $content);
+		return wp_markdown($content);
 	}
 
 	function the_content($content)
@@ -197,7 +256,7 @@ function wp_gfm_init()
 		if (PHP_VERSION_ID >= 50300) {
 			if (file_exists(dirname(__FILE__) . '/vendor/autoload.php')) {
 				require_once dirname(__FILE__) . '/vendor/autoload.php';
-				$plugin->hasConverter = true;
+				$plugin->php_markdown_init();
 			}
 		}
 	}

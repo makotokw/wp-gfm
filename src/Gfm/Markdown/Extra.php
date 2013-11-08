@@ -6,6 +6,7 @@ namespace Gfm\Markdown;
 
 class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 {
+	public static $useAutoLinkExtras = false;
 
 	public function __construct()
 	{
@@ -16,6 +17,22 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 	{
 		$text = $this->doGfmCodeBlocks($text);
 		return parent::hashHTMLBlocks($text);
+	}
+
+	protected function doAutoLinks($text)
+	{
+		$text = parent::doAutoLinks($text);
+		if (self::$useAutoLinkExtras) {
+			$text = $this->doAutoLinksExtra($text);
+		}
+		return $text;
+	}
+
+	protected function doAutoLinksExtra($text)
+	{
+		$text = preg_replace_callback('{((https?|ftp|dict):[^\'">\s]+)[^"]}i',
+			array(&$this, '_doAutoLinks_url_callback'), $text);
+		return $text;
 	}
 
 	protected function doGfmCodeBlocks($text)

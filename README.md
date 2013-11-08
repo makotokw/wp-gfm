@@ -19,11 +19,7 @@ The plugin has two convertion.
 
 ## Installation
 
-Use git
-
-    cd /path/to/wp-content/plugins
-    git clone git://github.com/makotokw/wp-gfm.git
-
+Download from https://github.com/makotokw/wp-gfm/releases and upload to /path/to/wp-content/plugins/wp-gfm
 
 ## PHP-Markdown (Recommended)
 
@@ -58,6 +54,8 @@ Output
 You should use [google-code-prettify](https://code.google.com/p/google-code-prettify/) if you want to allow syntax highlighting.
 
 ## GitHub Render API
+
+This way is not good. If there are 5 shortcodes in page, the plugin require 5 HTTP requests.
 
 ### Setup
 
