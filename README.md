@@ -44,14 +44,21 @@ Since version 0.2, it supported **Fenced code blocks**.
     ```
     [/markdown]
 
-Output
+### Option
 
-    <pre class="prettyprint lang-ruby">require 'redcarpet'
-    markdown = Redcarpet.new("Hello World!")
-    puts markdown.to_html
-    </pre>
+Admin > Settings > WP GFM
 
-You should use [google-code-prettify](https://code.google.com/p/google-code-prettify/) if you want to allow syntax highlighting.
+* AutoLink (default: no)
+* Code block tempalte (default: ``<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>`` )
+
+```
+<pre class="prettyprint lang-ruby">require 'redcarpet'
+markdown = Redcarpet.new("Hello World!")
+puts markdown.to_html
+</pre>
+```
+
+You can use [google-code-prettify](https://code.google.com/p/google-code-prettify/) if you want to allow syntax highlighting.
 
 ## GitHub Render API
 
