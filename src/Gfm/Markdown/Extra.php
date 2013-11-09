@@ -7,6 +7,7 @@ namespace Gfm\Markdown;
 class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 {
 	public static $useAutoLinkExtras = false;
+	public static $fencedCodeBlocksTemplate = '<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>';
 
 	public function __construct()
 	{
@@ -15,7 +16,7 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 
 	protected function hashHTMLBlocks($text)
 	{
-		$text = $this->doGfmCodeBlocks($text);
+		$text = $this->doFencedCodeBlocks($text);
 		return parent::hashHTMLBlocks($text);
 	}
 
@@ -35,7 +36,7 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 		return $text;
 	}
 
-	protected function doGfmCodeBlocks($text)
+	protected function doFencedCodeBlocks($text)
 	{
 		#
 		# Adding the Gfm code block syntax to regular Markdown:
@@ -44,8 +45,6 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 		# Code block
 		# ```
 		#
-		$less_than_tab = $this->tab_width;
-
 		$text = preg_replace_callback('{
 				(?:\n|\A)
 				# 1: Opening marker three `.
@@ -65,21 +64,20 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 				# Closing marker.
 				\1 [ ]* \n
 			}xm',
-			array(&$this, '_doGfmCodeBlocks_callback'), $text);
+			array(&$this, '_doFencedCodeBlocks_callback'), $text);
 
 		return $text;
 	}
 
 
-	protected function _doGfmCodeBlocks_callback($matches)
+	protected function _doFencedCodeBlocks_callback($matches)
 	{
 		$option = $matches[2];
 		$codeblock = $matches[3];
 
-		@list ($language, $title) = explode(':', $option);
+		@list ($lang, $title) = explode(':', $option);
 
 		$codeblock = htmlspecialchars($codeblock, ENT_NOQUOTES);
-
 
 		// TODO
 //		if ($code = Pygments::pygmentize($codeblock)) {
@@ -87,31 +85,17 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 //		}
 
 		$codeblock = preg_replace_callback('/^\n+/',
-			array(&$this, '_doGfmCodeBlocks_newlines'), $codeblock);
+			array(&$this, '_doFencedCodeBlocks_newlines'), $codeblock);
 
-		$class = 'prettyprint';
-		if (!empty($language)) {
-			if ($language == 'bash') $language = 'bsh';
-			$class .= ' lang-'.$language;
-		}
-		$attr_str = ' class="'.$class.'"';
-		if (!empty($title)) {
-			$attr_str .= ' title="'.$title.'"';
-		}
-		$block = "<pre$attr_str>$codeblock</pre>";
+		$block = $this->applyCodeBlockTemplate($lang, $title, $codeblock);
 
 		return "\n\n" . $this->hashBlock($block) . "\n\n";
 	}
 
-	protected function _doGfmCodeBlocks_newlines($matches)
+	protected function _doFencedCodeBlocks_newlines($matches)
 	{
 		return str_repeat("<br$this->empty_element_suffix",
 			strlen($matches[0]));
-	}
-
-	protected function _doFencedCodeBlocks_callback($matches)
-	{
-		return $this->_doGfmCodeBlocks_callback($matches);
 	}
 
 	protected function _doCodeBlocks_callback($matches)
@@ -124,8 +108,42 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 		# trim leading newlines and trailing newlines
 		$codeblock = preg_replace('/\A\n+|\n+\z/', '', $codeblock);
 
-		$codeblock = "<pre class=\"prettyprint\">$codeblock\n</pre>";
-		return "\n\n".$this->hashBlock($codeblock)."\n\n";
+		$block = $this->applyCodeBlockTemplate('', '', $codeblock);
+
+		return "\n\n".$this->hashBlock($block)."\n\n";
 	}
 
+	protected function applyCodeBlockTemplate($lang, $title, $codeblock)
+	{
+		list ($before, $after) = explode('{{codeblock}}', self::$fencedCodeBlocksTemplate);
+
+		if (strpos($before, 'prettyprint') !== false) {
+
+			// The lang-* class specifies the language file extensions.
+			// File extensions supported by default include
+			// "bsh", "c", "cc", "cpp", "cs", "csh", "cyc", "cv", "htm", "html",
+			// "java", "js", "m", "mxml", "perl", "pl", "pm", "py", "rb", "sh",
+			// "xhtml", "xml", "xsl".
+			if (!empty($lang)) {
+				$fileExtensions = array(
+					'ruby' => 'rb',
+					'bash' => 'bsh',
+				);
+				if (array_key_exists($lang, $fileExtensions)) {
+					$lang = $fileExtensions[$lang];
+				}
+			}
+		}
+
+		foreach (array('lang' => $lang, 'title' => $title) as $name => $value) {
+			if (is_null($value)) {
+				$value = '';
+			}
+			$name = '{{' . $name . '}}';
+			$before = str_replace($name, $value, $before);
+			$after = str_replace($name, $value, $after);
+		}
+
+		return $before . $codeblock . $after;
+	}
 }

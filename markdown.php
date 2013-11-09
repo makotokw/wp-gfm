@@ -15,6 +15,9 @@ class WP_GFM
 	const VERSION = '0.5';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
+	// google-code-prettify: https://code.google.com/p/google-code-prettify/
+	const FENCED_CODE_BLOCKS_TEMPLATE_FOR_GOOGLE_CODE_PRETTIFY = '<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>';
+
 	public $agent = '';
 	public $url = '';
 	public $hasConverter = false;
@@ -38,6 +41,7 @@ class WP_GFM
 		$this->gfmOptions = wp_parse_args((array)get_option('gfm'), array(
 			'php_md_always_convert' => false,
 			'php_md_use_autolink' => false,
+			'php_md_fenced_code_blocks_template' => self::FENCED_CODE_BLOCKS_TEMPLATE_FOR_GOOGLE_CODE_PRETTIFY,
 			'render_url' => self::DEFAULT_RENDER_URL,
 		));
 
@@ -58,6 +62,7 @@ class WP_GFM
 		if (class_exists('\Gfm\Markdown\Extra')) {
 			$this->hasConverter = true;
 			\Gfm\Markdown\Extra::$useAutoLinkExtras = $this->gfmOptions['php_md_use_autolink'] == true;
+			\Gfm\Markdown\Extra::$fencedCodeBlocksTemplate = $this->gfmOptions['php_md_fenced_code_blocks_template'];
 		}
 
 		if ($this->gfmOptions['php_md_always_convert']) {
@@ -104,6 +109,14 @@ class WP_GFM
 			'setting_section_php_markdown'
 		);
 
+		add_settings_field(
+			'php_md_fenced_code_blocks_template',
+			'Fenced Code Blocks Tempalte',
+			array($this, 'create_gfm_php_md_fenced_code_blocks_template_field'),
+			'gfm-setting-admin',
+			'setting_section_php_markdown'
+		);
+
 		add_settings_section(
 			'setting_section_gfm',
 			'GitHub Flavored Markdown',
@@ -133,16 +146,17 @@ class WP_GFM
 		}
 	}
 
-	function options_page()
-	{
+function options_page()
+{
 	?>
 	<div class="wrap">
 		<?php screen_icon(); ?>
 		<h2>WP GFM Settings</h2>
+
 		<form method="post" action="options.php">
 			<?php
 			settings_fields('gfm_option_group');
-			do_settings_sections( 'gfm-setting-admin' );
+			do_settings_sections('gfm-setting-admin');
 			?>
 			<?php submit_button(); ?>
 		</form>
@@ -164,16 +178,28 @@ class WP_GFM
 	{
 	}
 
-	function create_gfm_php_md_always_convert_field() {
+	function create_gfm_php_md_always_convert_field()
+	{
 		echo '<input type="checkbox" id="php_md_always_convert" name="gfm_array[php_md_always_convert] value="1" class="code" '
 			. checked(1, $this->gfmOptions['php_md_always_convert'], false) . ' /> All contents are markdown!'
-			. '<p class="description">The plugin converts content even if it is not surrounded by [markdown]</p>'
-		;
+			. '<p class="description">The plugin converts content even if it is not surrounded by [markdown]</p>';
 	}
 
-	function create_gfm_php_md_use_autolink_field() {
+	function create_gfm_php_md_use_autolink_field()
+	{
 		echo '<input type="checkbox" id="gfm_php_md_use_autolink" name="gfm_array[php_md_use_autolink] value="1" class="code" '
-		. checked(1, $this->gfmOptions['php_md_use_autolink'], false) . ' /> Use AutoLink';
+			. checked(1, $this->gfmOptions['php_md_use_autolink'], false) . ' /> Use AutoLink';
+	}
+
+	function create_gfm_php_md_fenced_code_blocks_template_field()
+	{
+		$value = esc_attr($this->gfmOptions['php_md_fenced_code_blocks_template']);
+		echo '<textarea id="gfm_php_md_fenced_code_blocks_template" name="gfm_array[php_md_fenced_code_blocks_template]" class="large-text">' . $value . '</textarea>'
+		. '<p class="description">'
+		. '{{lang}}, {{title}}, {{codeblock}}<br/>'
+		. 'For <a href="https://code.google.com/p/google-code-prettify/" target="_blank">google-code-prettify</a>: <code>' . esc_attr(self::FENCED_CODE_BLOCKS_TEMPLATE_FOR_GOOGLE_CODE_PRETTIFY) . '</code><br/>'
+		. '</p>'
+		;
 	}
 
 	function print_section_gfm()
@@ -181,8 +207,8 @@ class WP_GFM
 	}
 
 	function create_gfm_render_url_field() {
-?><input type="text" id="gfm_render_url" name="gfm_array[render_url]"
-			 value="<?php echo $this->gfmOptions['render_url'] ?>" class="regular-text"/><?php
+		$value = esc_attr($this->gfmOptions['render_url']);
+		echo '<input type="text" id="gfm_render_url" name="gfm_array[render_url]" value="' . $value .'" class="regular-text"/>';
 	}
 
 	function shortcode_gfm($atts, $content = '')
@@ -262,7 +288,7 @@ function wp_gfm_init()
 	}
 
 	include_once 'updater.php';
-	if ( is_admin() && class_exists('WP_GitHub_Updater') ) {
+	if (is_admin() && class_exists('WP_GitHub_Updater')) {
 		new WP_GitHub_Updater(
 			array(
 				'slug' => plugin_basename(__FILE__),
