@@ -31,9 +31,15 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 
 	protected function doAutoLinksExtra($text)
 	{
-		$text = preg_replace_callback('{((https?|ftp|dict):[^\'">\s]+)[^"]}i',
-			array(&$this, '_doAutoLinks_url_callback'), $text);
+		$text = preg_replace_callback('{([^\'"])((https?|ftp|dict):[^\'">\s]+)}i',
+			array(&$this, '_doAutoLinks__extra_url_callback'), $text);
 		return $text;
+	}
+
+	protected function _doAutoLinks__extra_url_callback($matches) {
+		$url = $this->encodeAttribute($matches[2]);
+		$link = "<a href=\"$url\">$url</a>";
+		return $matches[1] . $this->hashPart($link);
 	}
 
 	protected function doFencedCodeBlocks($text)
