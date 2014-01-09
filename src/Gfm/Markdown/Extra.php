@@ -2,6 +2,8 @@
 
 namespace Gfm\Markdown;
 
+use Gfm\Pygments;
+
 \Michelf\Markdown::MARKDOWNLIB_VERSION;
 
 class Extra extends \Michelf\_MarkdownExtra_TmpImpl
@@ -83,12 +85,12 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 
 		@list ($lang, $title) = explode(':', $option);
 
-		$codeblock = htmlspecialchars($codeblock, ENT_NOQUOTES);
-
 		// TODO
 //		if ($code = Pygments::pygmentize($codeblock)) {
 //			return $code;
 //		}
+
+		$codeblock = htmlspecialchars($codeblock, ENT_NOQUOTES);
 
 		$codeblock = preg_replace_callback('/^\n+/',
 			array(&$this, '_doFencedCodeBlocks_newlines'), $codeblock);
