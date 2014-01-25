@@ -2,8 +2,6 @@
 
 namespace Gfm\Markdown;
 
-use Gfm\Pygments;
-
 \Michelf\Markdown::MARKDOWNLIB_VERSION;
 
 class Extra extends \Michelf\_MarkdownExtra_TmpImpl
@@ -40,7 +38,7 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 
 	protected function _doAutoLinks__extra_url_callback($matches) {
 		$url = $this->encodeAttribute($matches[2]);
-		$link = "<a href=\"$url\">$url</a>";
+		$link = '<a href="' . $url . '">' . $url . '</a>';
 		return $matches[1] . $this->hashPart($link);
 	}
 
@@ -81,21 +79,16 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 	protected function _doFencedCodeBlocks_callback($matches)
 	{
 		$option = $matches[2];
-		$codeblock = $matches[3];
+		$code_block = $matches[3];
 
 		@list ($lang, $title) = explode(':', $option);
 
-		// TODO
-//		if ($code = Pygments::pygmentize($codeblock)) {
-//			return $code;
-//		}
+		$code_block = htmlspecialchars($code_block, ENT_NOQUOTES);
 
-		$codeblock = htmlspecialchars($codeblock, ENT_NOQUOTES);
+		$code_block = preg_replace_callback('/^\n+/',
+			array(&$this, '_doFencedCodeBlocks_newlines'), $code_block);
 
-		$codeblock = preg_replace_callback('/^\n+/',
-			array(&$this, '_doFencedCodeBlocks_newlines'), $codeblock);
-
-		$block = $this->applyCodeBlockTemplate($lang, $title, $codeblock);
+		$block = $this->applyCodeBlockTemplate($lang, $title, $code_block);
 
 		return "\n\n" . $this->hashBlock($block) . "\n\n";
 	}
@@ -108,15 +101,15 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 
 	protected function _doCodeBlocks_callback($matches)
 	{
-		$codeblock = $matches[1];
+		$code_block = $matches[1];
 
-		$codeblock = $this->outdent($codeblock);
-		$codeblock = htmlspecialchars($codeblock, ENT_NOQUOTES);
+		$code_block = $this->outdent($code_block);
+		$code_block = htmlspecialchars($code_block, ENT_NOQUOTES);
 
 		# trim leading newlines and trailing newlines
-		$codeblock = preg_replace('/\A\n+|\n+\z/', '', $codeblock);
+		$code_block = preg_replace('/\A\n+|\n+\z/', '', $code_block);
 
-		$block = $this->applyCodeBlockTemplate('', '', $codeblock);
+		$block = $this->applyCodeBlockTemplate('', '', $code_block);
 
 		return "\n\n".$this->hashBlock($block)."\n\n";
 	}

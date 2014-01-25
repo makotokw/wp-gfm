@@ -2,7 +2,7 @@
 /*
  Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
- Version: 0.6
+ Version: 0.6.1
  Description: Converts block in GitHub Flavored Markdown by using shortcode [gfm] and support PHP-Markdown by using shortcode [markdown]
  Author: makoto_kw
  Author URI: http://makotokw.com/
@@ -12,7 +12,7 @@
 class WP_GFM
 {
 	const NAME = 'WP_GFM';
-	const VERSION = '0.6';
+	const VERSION = '0.6.1';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
 	// google-code-prettify: https://code.google.com/p/google-code-prettify/
@@ -45,15 +45,10 @@ class WP_GFM
 			'render_url' => self::DEFAULT_RENDER_URL,
 		));
 
-		add_filter('edit_page_form', array($this, 'edit_form_advanced')); // for page
-		add_filter('edit_form_advanced', array($this, 'edit_form_advanced')); // for post
-
 		if (is_admin()) {
 			add_action('admin_init', array($this, 'admin_init'));
 			add_action('admin_menu', array($this, 'admin_menu'));
-		} else {
-			add_action('wp_enqueue_scripts', array($this, 'wp_enqueue_styles'));
-			add_action('wp_enqueue_scripts', array($this, 'wp_enqueue_scripts'));
+			add_action('admin_print_footer_scripts',  array($this, 'admin_quicktags'));
 		}
 	}
 
@@ -67,19 +62,12 @@ class WP_GFM
 
 		if ($this->gfmOptions['php_md_always_convert']) {
 			add_action('the_content', array($this, 'force_convert'), 7);
+
 		} else {
 			add_action('the_content', array($this, 'the_content'), 7);
 		}
-	}
 
-	function wp_enqueue_styles()
-	{
-		wp_enqueue_style('gfm', $this->url . '/css/pygments.css', array(), self::VERSION);
-	}
-
-	function wp_enqueue_scripts()
-	{
-
+		add_filter('pre_comment_content', array($this, 'pre_comment_content'), 5);
 	}
 
 	function admin_init()
@@ -146,8 +134,8 @@ class WP_GFM
 		}
 	}
 
-function options_page()
-{
+	function options_page()
+	{
 	?>
 	<div class="wrap">
 		<?php screen_icon(); ?>
@@ -238,11 +226,13 @@ function options_page()
 		return $content;
 	}
 
-	function edit_form_advanced()
+	function pre_comment_content( $comment )
 	{
-		?>
-		<script type="text/javascript" src="<?php echo $this->url ?>/admin.js"></script>
-	<?php
+		var_dump($comment);
+		$comment = stripslashes($comment);
+		$comment = $this->the_content($comment);
+		$comment = addslashes($comment);
+		return $comment;
 	}
 
 	function convert_html_by_render_url($renderUrl, $text)
@@ -269,6 +259,32 @@ function options_page()
 		}
 		return wp_remote_retrieve_body($response);
 	}
+
+
+	function admin_quicktags()
+		// http://wordpress.stackexchange.com/questions/37849/add-custom-shortcode-button-to-editor
+		/* Add custom Quicktag buttons to the editor Wordpress ver. 3.3 and above only
+		 *
+		 * Params for this are:
+		 * - Button HTML ID (required)
+		 * - Button display, value="" attribute (required)
+		 * - Opening Tag (required)
+		 * - Closing Tag (required)
+		 * - Access key, accesskey="" attribute for the button (optional)
+		 * - Title, title="" attribute (optional)
+		 * - Priority/position on bar, 1-9 = first, 11-19 = second, 21-29 = third, etc. (optional)
+		 */
+	{ ?>
+		<script type="text/javascript">
+			(function($){
+				if ( typeof(QTags) != 'undefined' ) {
+					$.each(['markdown', 'gfm'], function(index, c){
+						QTags.addButton(c, '['+c+']', '['+c+']', '[/'+c+']');
+					});
+				}
+			})(jQuery);
+		</script>
+	<?php }
 }
 
 add_action('init', 'wp_gfm_init');
