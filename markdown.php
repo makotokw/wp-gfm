@@ -2,7 +2,7 @@
 /*
  Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
- Version: 0.6.2
+ Version: 0.6.3
  Description: Converts block in GitHub Flavored Markdown by using shortcode [gfm] and support PHP-Markdown by using shortcode [markdown]
  Author: makoto_kw
  Author URI: http://makotokw.com/
@@ -12,7 +12,7 @@
 class WP_GFM
 {
 	const NAME = 'WP_GFM';
-	const VERSION = '0.6.2';
+	const VERSION = '0.6.3';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
 	// google-code-prettify: https://code.google.com/p/google-code-prettify/
@@ -168,7 +168,7 @@ class WP_GFM
 
 	function create_gfm_php_md_always_convert_field()
 	{
-		echo '<input type="checkbox" id="php_md_always_convert" name="gfm_array[php_md_always_convert] value="1" class="code" '
+		echo '<input type="checkbox" id="php_md_always_convert" name="gfm_array[php_md_always_convert]" value="1" class="code" '
 			. checked(1, $this->gfmOptions['php_md_always_convert'], false) . ' /> All contents are markdown!'
 			. '<p class="description">The plugin converts content even if it is not surrounded by [markdown]</p>';
 	}
