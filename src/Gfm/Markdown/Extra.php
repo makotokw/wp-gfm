@@ -9,15 +9,186 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 	public static $useAutoLinkExtras = false;
 	public static $fencedCodeBlocksTemplate = '<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>';
 
+	static protected $elementCssPrefix = 'gfm-';
+	static protected $elementIdPrefix = 'gfm-';
+	static protected $elementCounts = array();
+
 	public function __construct()
 	{
 		parent::__construct();
+
+		$this->document_gamut['doTableOfContents'] = 55;
 	}
 
-	protected function hashHTMLBlocks($text)
+	/**
+	 * @return string
+	 */
+	public static function getElementIdPrefix()
 	{
-		$text = $this->doFencedCodeBlocks($text);
-		return parent::hashHTMLBlocks($text);
+		return self::$elementIdPrefix;
+	}
+
+	/**
+	 * @param string $idPrefix
+	 */
+	public static function setElementIdPrefix($idPrefix)
+	{
+		self::$elementIdPrefix = $idPrefix;
+	}
+
+	/**
+	 * @return string
+	 */
+	public static function getElementCssPrefix()
+	{
+		return self::$elementCssPrefix;
+	}
+
+	/**
+	 * @param string $elementCssPrefix
+	 */
+	public static function setElementCssPrefix($elementCssPrefix)
+	{
+		self::$elementCssPrefix = $elementCssPrefix;
+	}
+
+	/**
+	 * @return string
+	 */
+	public static function createElementId()
+	{
+		if (!array_key_exists(self::$elementIdPrefix, self::$elementCounts)) {
+			self::$elementCounts[self::$elementIdPrefix] = 0;
+		}
+		self::$elementCounts[self::$elementIdPrefix]++;
+		return self::$elementIdPrefix . self::$elementCounts[self::$elementIdPrefix];
+	}
+
+	public static function resetElementCount()
+	{
+		self::$elementCounts = array();
+	}
+
+	protected function doTableOfContents($text)
+	{
+		#
+		# Adds TOC support by including the following on a single line:
+		#
+		# [TOC]
+		#
+		# TOC Requirements:
+		#     * Only headings 2-6
+		#     * Headings must have an ID
+		#     * Builds TOC with headings _after_ the [TOC] tag
+
+		if (preg_match('/\[(|>)TOC\]/im', $text, $tocMatches, PREG_OFFSET_CAPTURE)) {
+			$toc = '';
+			if (preg_match_all('/<h([2-6]) id="([0-9a-z_-]+)">(.*?)<\/h\1>/i', $text, $headers, PREG_SET_ORDER, $tocMatches[0][1])) {
+				$alignCls = $tocMatches[1][0] == '>' ? 'right' : 'left';
+				$cls = self::getElementCssPrefix();
+				$toc .= <<<"EOF"
+<div class="{$cls}toc-content {$alignCls}">
+EOF;
+				$prevLevel = 0;
+				foreach ($headers as $header) {
+					$level = (int)$header[1] - 1; // 2-origin to 1-origin
+					$anchorId = $header[2];
+					$label = $header[3];
+					if ($prevLevel < $level) {
+						for ($i = 0; $prevLevel + $i < $level; $i++) {
+							$toc .= '<ul>';
+						}
+					} else if ($prevLevel > $level) {
+						for ($i = 0; $prevLevel - $i > $level; $i++) {
+							$toc .= '</ul>';
+						}
+					}
+					$toc .= '<li><a href="#' . $anchorId . '">' . htmlspecialchars($label) . '</li>' . PHP_EOL;
+					$prevLevel = $level;
+				}
+				while ($prevLevel > 0) {
+					$toc .= '</ul>';
+					$prevLevel--;
+				}
+				$toc .= <<<"EOF"
+</div>
+EOF;
+			}
+			$text = preg_replace('/\[(:?|>)TOC\]/im', $toc, $text);
+		}
+
+		return trim($text, "\n");
+	}
+
+	protected function doHeaders($text)
+	{
+		#
+		# Redefined to add id attribute support.
+		#
+		# Setext-style headers:
+		#     Header 1  {#header1}
+		#     ========
+		#
+		#     Header 2  {#header2}
+		#     --------
+		#
+		$text = preg_replace_callback(
+			'{
+				(^.+?)                              # $1: Header text
+				(?:[ ]+\{\#([-_:a-zA-Z0-9]+)\})?    # $2: Id attribute
+				[ ]*\n(=+|-+)[ ]*\n+                # $3: Header footer
+			}mx',
+			array(&$this, '_doHeaders_callback_setext'), $text);
+
+		# atx-style headers:
+		#   # Header 1        {#header1}
+		#   ## Header 2       {#header2}
+		#   ## Header 2 with closing hashes ##  {#header3}
+		#   ...
+		#   ###### Header 6   {#header2}
+		#
+		$text = preg_replace_callback(
+			'{
+				 ^(\#{1,6})  # $1 = string of #\'s
+				 [ ]*
+				 (.+?)       # $2 = Header text
+				 [ ]*
+				 \#*         # optional closing #\'s (not counted)
+				 (?:[ ]+\{\#([-_:a-zA-Z0-9]+)\})? # id attribute
+				 [ ]*\n+
+			}xm',
+			array(&$this, '_doHeaders_callback_atx'), $text);
+		return $text;
+	}
+
+	protected function _doHeaders_attr($attr)
+	{
+		if (empty($attr)) return "";
+		return " id=\"$attr\"";
+	}
+
+	protected function _doHeaders_callback_setext($matches)
+	{
+		if ($matches[3] == '-' && preg_match('{^- }', $matches[1]))
+			return $matches[0];
+		$level = $matches[3]{0} == '=' ? 1 : 2;
+		$attr = $this->_doHeaders_attr($id =& $matches[2]);
+		$block = "<h$level$attr>" . $this->runSpanGamut($matches[1]) . "</h$level>";
+		return "\n" . $this->hashBlock($block) . "\n\n";
+	}
+
+	protected function _doHeaders_callback_atx($matches)
+	{
+		$level = strlen($matches[1]);
+		$attr = @$matches[3];
+		if (empty($attr)) {
+			$attr = '#' . $this->createElementId();
+		} else {
+			$attr = '#' . $attr;
+		}
+		$attr = $this->doExtraAttributes("h$level", $attr);
+		$block = "<h$level$attr>".$this->runSpanGamut($matches[2])."</h$level>";
+		return "\n" . $this->hashBlock($block) . "\n\n";
 	}
 
 	protected function doAutoLinks($text)

@@ -2,7 +2,7 @@
 /*
  Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
- Version: 0.6.3
+ Version: 0.7
  Description: Converts block in GitHub Flavored Markdown by using shortcode [gfm] and support PHP-Markdown by using shortcode [markdown]
  Author: makoto_kw
  Author URI: http://makotokw.com/
@@ -12,7 +12,7 @@
 class WP_GFM
 {
 	const NAME = 'WP_GFM';
-	const VERSION = '0.6.3';
+	const VERSION = '0.7';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
 	// google-code-prettify: https://code.google.com/p/google-code-prettify/
@@ -35,8 +35,7 @@ class WP_GFM
 	private function __construct()
 	{
 		$this->agent = self::NAME . '/' . self::VERSION;
-		$wpurl = (function_exists('site_url')) ? site_url() : get_bloginfo('wpurl');
-		$this->url = $wpurl . '/wp-content/plugins/' . basename(dirname(__FILE__));
+		$this->url = plugins_url('', __FILE__);
 
 		$this->gfmOptions = wp_parse_args((array)get_option('gfm'), array(
 			'php_md_always_convert' => false,
@@ -49,20 +48,27 @@ class WP_GFM
 			add_action('admin_init', array($this, 'admin_init'));
 			add_action('admin_menu', array($this, 'admin_menu'));
 			add_action('admin_print_footer_scripts',  array($this, 'admin_quicktags'));
+		} else {
+			add_action('wp_enqueue_scripts', array($this, 'wp_enqueue_styles'));
 		}
+	}
+
+	function wp_enqueue_styles()
+	{
+		wp_enqueue_style('wp-gfm', $this->url . '/css/markdown.css', array(), self::VERSION);
 	}
 
 	function php_markdown_init()
 	{
 		if (class_exists('\Gfm\Markdown\Extra')) {
 			$this->hasConverter = true;
+			\Gfm\Markdown\Extra::setElementCssPrefix('wp-gfm-');
 			\Gfm\Markdown\Extra::$useAutoLinkExtras = $this->gfmOptions['php_md_use_autolink'] == true;
 			\Gfm\Markdown\Extra::$fencedCodeBlocksTemplate = $this->gfmOptions['php_md_fenced_code_blocks_template'];
 		}
 
 		if ($this->gfmOptions['php_md_always_convert']) {
 			add_action('the_content', array($this, 'force_convert'), 7);
-
 		} else {
 			add_action('the_content', array($this, 'the_content'), 7);
 		}
@@ -137,8 +143,10 @@ class WP_GFM
 	function options_page()
 	{
 	?>
-	<div class="wrap">
-		<?php screen_icon(); ?>
+	<div class="wrap wrap-wp-gfm">
+
+		<i class="dashicons dashicons-admin-settings"></i>
+
 		<h2>WP GFM Settings</h2>
 
 		<form method="post" action="options.php">
@@ -221,6 +229,13 @@ class WP_GFM
 
 	function the_content($content)
 	{
+		if (class_exists('\Gfm\Markdown\Extra')) {
+			if (isset($GLOBALS['post'])) {
+				if (isset($GLOBALS['post']->ID)) {
+					\Gfm\Markdown\Extra::setElementIdPrefix('post-' . $GLOBALS['post']->ID . '-md-');
+				}
+			}
+		}
 		$content = preg_replace_callback('/\[markdown\](.*?)\[\/markdown\]/s', create_function('$matches', 'return wp_markdown($matches[1]);'), $content);
 		$content = preg_replace_callback('/\[gfm\](.*?)\[\/gfm\]/s', create_function('$matches', 'return wp_fgm($matches[1]);'), $content);
 		return $content;

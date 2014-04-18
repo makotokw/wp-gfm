@@ -10,7 +10,7 @@ wp-gfm is the WordPress plugin that convert from GitHub Flavored Markdown by usi
 
 ## How to work
 
-The plugin has two convertion. 
+The plugin has two conversions.
 
 ``[markdown]`` as shortcode for PHP-Markdown, convert by using ``\Michelf\Markdown`` class **inside WordPress**.
 
@@ -23,9 +23,13 @@ Download from https://github.com/makotokw/wp-gfm/releases and upload to /path/to
 
 ## PHP-Markdown (Recommended)
 
+This conversion depends on [PHP Markdown Lib 1.4](http://michelf.ca/projects/php-markdown/).
+
 ### Usage
 
 Use ``[markdown][/markdown]`` as shortcode on entry.
+
+Example:
 
     [markdown]
     | First Header  | Second Header |
@@ -34,7 +38,9 @@ Use ``[markdown][/markdown]`` as shortcode on entry.
     | Content Cell  | Content Cell  |
     [/markdown]
 
-Since version 0.2, it supported **Fenced code blocks**.
+#### Fenced code blocks
+
+Example:
 
     [markdown]
     ```ruby
@@ -44,12 +50,37 @@ Since version 0.2, it supported **Fenced code blocks**.
     ```
     [/markdown]
 
+#### Table of content
+
+left aligned toc.
+
+    [TOC]
+
+right aligned toc.
+
+    [>TOC]
+
+Example:
+
+```
+[markdown]
+# headLineOne
+
+## something
+
+[TOC]
+
+## something more
+[/markdown]
+```
+
 ### Option
 
-Admin > Settings > WP GFM
+ Admin > Settings > WP GFM
 
 * AutoLink (default: no)
-* Code block tempalte (default: ``<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>`` )
+* Code block template
+ * (default: ``<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>`` )
 
 ```
 <pre class="prettyprint lang-ruby">require 'redcarpet'
@@ -86,6 +117,14 @@ Use ``[gfm][/gfm]`` as shortcode on entry.
 
 ![Result](https://dl.dropbox.com/u/8932138/screenshot/wp-gfm/wp-gfm_2013-04-08_2027.png)
 
+
+## Development
+
+```
+npm install
+grunt debug
+```
+
 ## LICENSE
 
 The MIT License
@@ -94,4 +133,4 @@ The MIT License
 
 The line below is used for the updater API, please leave it untouched unless bumping the version up :)
 
-~Current Version:0.6.3~
+~Current Version:0.7~
