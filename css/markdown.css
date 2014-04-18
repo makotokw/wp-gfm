@@ -1,0 +1,50 @@
+.markdown-content h1, .markdown-content h2, .markdown-content h3, .markdown-content h4, .markdown-content h5, .markdown-content h6 {
+  clear: none;
+  outline: none;
+}
+
+.wp-gfm-toc-content {
+  background-color: #fefefe;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  margin-left: 0;
+  display: table;
+}
+
+.wp-gfm-toc-content > ul {
+  margin-top: 15px;
+}
+.wp-gfm-toc-content ul {
+  padding: 0;
+  margin: 0 0 0 20px;
+}
+.wp-gfm-toc-content li {
+  margin: 0;
+  font-size: 12px;
+}
+.wp-gfm-toc-content li li {
+  margin-left: 1.5em;
+  font-size: 10px;
+}
+.wp-gfm-toc-content a {
+  color: #333;
+  text-decoration: none;
+}
+.wp-gfm-toc-content a:hover {
+  text-decoration: underline;
+}
+.wp-gfm-toc-content.right {
+  float: right;
+  margin-left: 12px;
+  margin-right: 0;
+  width: auto;
+}
+.wp-gfm-toc-content.left {
+  float: left;
+  margin-right: 12px;
+  margin-left: 0;
+  width: auto;
+}
