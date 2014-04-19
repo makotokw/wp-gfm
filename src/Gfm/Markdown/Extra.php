@@ -120,7 +120,7 @@ EOF;
 							$toc .= '</ul>';
 						}
 					}
-					$toc .= '<li><a href="#' . $anchorId . '">' . htmlspecialchars($label) . '</li>' . PHP_EOL;
+					$toc .= '<li><a href="#' . $anchorId . '">' . htmlspecialchars($label) . '</a></li>' . PHP_EOL;
 					$prevLevel = $level;
 				}
 				while ($prevLevel > 0) {
