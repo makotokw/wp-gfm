@@ -17,7 +17,8 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 	{
 		parent::__construct();
 
-		$this->document_gamut['doTableOfContents'] = 55;
+		$this->span_gamut['markTableOfContents'] = 5;
+		$this->document_gamut['doTableOfContents'] = 50;
 	}
 
 	/**
@@ -69,6 +70,21 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 		self::$elementCounts = array();
 	}
 
+	protected function teardown()
+	{
+		parent::teardown();
+	}
+
+	protected function markTableOfContents($text)
+	{
+		if (preg_match('/^\[(|>)TOC\]$/i', $text, $tocMatches)) {
+			$block = ($tocMatches[1] == '') ? 'LTOC' : 'RTOC';
+			$hash = sha1(time());
+			return $block . $hash;
+		}
+		return $text;
+	}
+
 	protected function doTableOfContents($text)
 	{
 		#
@@ -81,10 +97,11 @@ class Extra extends \Michelf\_MarkdownExtra_TmpImpl
 		#     * Headings must have an ID
 		#     * Builds TOC with headings _after_ the [TOC] tag
 
-		if (preg_match('/\[(|>)TOC\]/im', $text, $tocMatches, PREG_OFFSET_CAPTURE)) {
+		if (preg_match('/(L|R)TOC[\w]{40}/mi', $text, $tocMatches, PREG_OFFSET_CAPTURE)) {
+			$mark = $tocMatches[0][0];
 			$toc = '';
 			if (preg_match_all('/<h([2-6]) id="([0-9a-z_-]+)">(.*?)<\/h\1>/i', $text, $headers, PREG_SET_ORDER, $tocMatches[0][1])) {
-				$alignCls = $tocMatches[1][0] == '>' ? 'right' : 'left';
+				$alignCls = $tocMatches[1][0] == 'R' ? 'right' : 'left';
 				$cls = self::getElementCssPrefix();
 				$toc .= <<<"EOF"
 <div class="{$cls}toc-content {$alignCls}">
@@ -114,7 +131,7 @@ EOF;
 </div>
 EOF;
 			}
-			$text = preg_replace('/\[(:?|>)TOC\]/im', $toc, $text);
+			$text = str_replace($mark, $toc, $text);
 		}
 
 		return trim($text, "\n");
