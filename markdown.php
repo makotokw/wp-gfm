@@ -2,7 +2,7 @@
 /*
  Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
- Version: 0.7.2
+ Version: 0.7.3
  Description: Converts block in GitHub Flavored Markdown by using shortcode [gfm] and support PHP-Markdown by using shortcode [markdown]
  Author: makoto_kw
  Author URI: http://makotokw.com/
@@ -12,7 +12,7 @@
 class WP_GFM
 {
 	const NAME = 'WP_GFM';
-	const VERSION = '0.7.2';
+	const VERSION = '0.7.3';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
 	// google-code-prettify: https://code.google.com/p/google-code-prettify/
@@ -73,12 +73,31 @@ class WP_GFM
 			add_action('the_content', array($this, 'the_content'), 7);
 		}
 
+		if ($this->gfmOptions['general_ad']) {
+			add_action('the_content', array($this, 'the_content_ad'), 8);
+		}
+
 		add_filter('pre_comment_content', array($this, 'pre_comment_content'), 5);
 	}
 
 	function admin_init()
 	{
 		register_setting('gfm_option_group', 'gfm_array', array($this, 'option_sanitize_gfm'));
+
+		add_settings_section(
+			'setting_section_general',
+			'General',
+			array($this, 'setting_section_general'),
+			'gfm-setting-admin'
+		);
+
+		add_settings_field(
+			'general_ad',
+			'',
+			array($this, 'create_gfm_general_ad_field'),
+			'gfm-setting-admin',
+			'setting_section_general'
+		);
 
 		add_settings_section(
 			'setting_section_php_markdown',
@@ -145,8 +164,6 @@ class WP_GFM
 	?>
 	<div class="wrap wrap-wp-gfm">
 
-		<i class="dashicons dashicons-admin-settings"></i>
-
 		<h2>WP GFM Settings</h2>
 
 		<form method="post" action="options.php">
@@ -168,6 +185,16 @@ class WP_GFM
 			update_option('gfm', $input);
 		}
 		return $input;
+	}
+
+	function print_section_general()
+	{
+	}
+
+	function create_gfm_general_ad_field()
+	{
+		echo '<input type="checkbox" id="general_ad" name="gfm_array[general_ad]" value="1" class="code" '
+			. checked(1, $this->gfmOptions['general_ad'], false) . ' /> Add a link of wp-gfm plugin to content';
 	}
 
 	function print_section_php_markdown()
@@ -239,6 +266,14 @@ class WP_GFM
 		$content = preg_replace_callback('/\[markdown\](.*?)\[\/markdown\]/s', create_function('$matches', 'return wp_markdown($matches[1]);'), $content);
 		$content = preg_replace_callback('/\[gfm\](.*?)\[\/gfm\]/s', create_function('$matches', 'return wp_fgm($matches[1]);'), $content);
 		return $content;
+	}
+
+	function the_content_ad($context)
+	{
+		if (strpos($context, '<div class="markdown-content">') !== false) {
+			return $context . '<div class="wp-gfm-ad"><span class="wp-gfm-powered-by">With Markdown By <a href="https://github.com/makotokw/wp-gfm" target="_blank">wp-gfm</a></span></div>';
+		}
+		return $context;
 	}
 
 	function pre_comment_content( $comment )

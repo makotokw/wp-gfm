@@ -48,3 +48,12 @@
   margin-left: 0;
   width: auto;
 }
+
+.wp-gfm-ad {
+  margin: 5px 0;
+  font-size: 12px;
+  text-align: right;
+}
+.wp-gfm-ad .wp-gfm-powered-by {
+  color: #999;
+}
