@@ -363,8 +363,8 @@ function wp_gfm_init()
 				'github_url' => 'https://github.com/makotokw/wp-gfm',
 				'zip_url' => 'https://github.com/makotokw/wp-gfm/archive/master.zip',
 				'sslverify' => true,
-				'requires' => '3.0',
-				'tested' => '3.6',
+				'requires' => '3.1',
+				'tested' => '3.9',
 				'readme' => 'README.md',
 			)
 		);
