@@ -1,4 +1,11 @@
 {
+	"name": "makotokw/wp-gfm",
+	"authors": [
+		{
+			"name": "Makoto Kawasaki",
+			"email": "makoto.kw@gmail.com"
+		}
+	],
 	"require": {
 		"php": ">=5.3",
 		"michelf/php-markdown": "1.4.*@dev"

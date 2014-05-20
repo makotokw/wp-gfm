@@ -1,6 +1,14 @@
 module.exports = function(grunt) {
 	require('load-grunt-tasks')(grunt);
 	grunt.initConfig({
+		exec: {
+			phpcs_plugin: {
+				cmd: 'phpcs --standard=WordPress *.php'
+			},
+			phpcs_src: {
+				cmd: 'phpcs --standard=PSR2 src'
+			}
+		},
 		compass: {
 			prod: {
 				options: {
@@ -31,6 +39,11 @@ module.exports = function(grunt) {
 			}
 		}
 	});
+
+	grunt.registerTask('phpcs', [
+		'exec:phpcs_plugin',
+		'exec:phpcs_src'
+	]);
 
 	grunt.registerTask('build', [
 		'compass:prod'
