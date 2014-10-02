@@ -123,7 +123,7 @@ class WP_GFM
 
 		add_settings_field(
 			'php_md_fenced_code_blocks_template',
-			'Fenced Code Blocks Tempalte',
+			'Fenced Code Blocks Template',
 			array( $this, 'create_gfm_php_md_fenced_code_blocks_template_field' ),
 			'gfm-setting-admin',
 			'setting_section_php_markdown'
