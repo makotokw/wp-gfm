@@ -3,6 +3,16 @@
     clear: none;
     outline: none;
   }
+  .footnotes {
+    hr {
+      margin-bottom: 4px;
+    }
+    ol {
+      padding: 0;
+      margin: 0 0 0 20px;
+      font-size: .8em;
+    }
+  }
 }
 
 .wp-gfm-toc-content {
