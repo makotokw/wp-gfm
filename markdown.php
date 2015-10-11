@@ -37,12 +37,13 @@ class WP_GFM
 		$this->url   = plugins_url( '', __FILE__ );
 
 		$this->gfm_options = wp_parse_args(
-			(array)get_option( 'gfm' ),
+			(array) get_option( 'gfm' ),
 			array(
-				'php_md_always_convert'              => false,
-				'php_md_use_autolink'                => false,
+				'general_ad' => false,
+				'php_md_always_convert' => false,
+				'php_md_use_autolink' => false,
 				'php_md_fenced_code_blocks_template' => self::FENCED_CODE_BLOCKS_TEMPLATE_FOR_GOOGLE_CODE_PRETTIFY,
-				'render_url'                         => self::DEFAULT_RENDER_URL,
+				'render_url' => self::DEFAULT_RENDER_URL,
 			)
 		);
 
@@ -163,6 +164,7 @@ class WP_GFM
 
 			<h2>WP GFM Settings</h2>
 
+			<!--suppress HtmlUnknownTarget -->
 			<form method="post" action="options.php">
 				<?php
 				settings_fields( 'gfm_option_group' );
@@ -183,7 +185,7 @@ class WP_GFM
 		return $input;
 	}
 
-	function print_section_general() {
+	function setting_section_general() {
 	}
 
 	function create_gfm_general_ad_field() {
@@ -223,8 +225,7 @@ class WP_GFM
 	}
 
 	function shortcode_gfm( $atts, $content = '' ) {
-		$renderUrl = @$this->gfm_options['render_url'];
-		return '<div class="gfm-content">' . $this->convert_html_by_render_url( $renderUrl, $content ) . '</div>';
+		return '<div class="gfm-content">' . $this->convert_html_by_render_url( $this->gfm_options['render_url'], $content ) . '</div>';
 	}
 
 	function shortcode_markdown( $atts, $content = '' ) {
@@ -283,7 +284,7 @@ class WP_GFM
 			return $msg;
 		}
 
-		if ( $response && isset($response['response']['code']) && $response['response']['code'] != 200 ) {
+		if ( $response && isset($response['response']['code']) && 200 != $response['response']['code'] ) {
 			$msg = sprintf( self::NAME . ' HttpError: %s %s', $response['response']['code'], $response['response']['message'] );
 			error_log( $msg . ' on ' . $renderUrl );
 			return $msg;
@@ -292,7 +293,7 @@ class WP_GFM
 	}
 
 
-	function admin_quicktags()
+	function admin_quicktags() {
 		// http://wordpress.stackexchange.com/questions/37849/add-custom-shortcode-button-to-editor
 		/* Add custom Quicktag buttons to the editor Wordpress ver. 3.3 and above only
 		 *
@@ -304,7 +305,7 @@ class WP_GFM
 		 * - Access key, accesskey="" attribute for the button (optional)
 		 * - Title, title="" attribute (optional)
 		 * - Priority/position on bar, 1-9 = first, 11-19 = second, 21-29 = third, etc. (optional)
-		 */ {
+		 */
 		?>
 		<script type="text/javascript">
 			(function ($) {
@@ -336,6 +337,7 @@ function wp_gfm_init() {
 
 	include_once 'updater.php';
 	if ( is_admin() && class_exists( 'WP_GitHub_Updater' ) ) {
+		/** @noinspection PhpUnusedLocalVariableInspection */
 		$updater = new WP_GitHub_Updater(
 			array(
 				'slug'               => plugin_basename( __FILE__ ),
