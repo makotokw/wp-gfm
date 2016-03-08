@@ -224,11 +224,11 @@ class WP_GFM
 		echo '<input type="text" id="gfm_render_url" name="gfm_array[render_url]" value="' . $value . '" class="regular-text"/>';
 	}
 
-	function shortcode_gfm( $atts, $content = '' ) {
+	function shortcode_gfm( /** @noinspection PhpUnusedParameterInspection */ $atts, $content = '' ) {
 		return '<div class="gfm-content">' . $this->convert_html_by_render_url( $this->gfm_options['render_url'], $content ) . '</div>';
 	}
 
-	function shortcode_markdown( $atts, $content = '' ) {
+	function shortcode_markdown( /** @noinspection PhpUnusedParameterInspection */ $atts, $content = '' ) {
 		if ( $this->has_converter ) {
 			return '<div class="markdown-content">' . \Gfm\Markdown\Extra::defaultTransform( $content ) . '</div>';
 		}
