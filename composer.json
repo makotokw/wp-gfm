@@ -8,7 +8,7 @@
 	],
 	"require": {
 		"php": ">=5.3",
-		"michelf/php-markdown": "1.4.*@dev"
+		"michelf/php-markdown": "1.6.*@dev"
 	},
 	"autoload": {
 		"psr-0": {

@@ -23,7 +23,7 @@ Download from https://github.com/makotokw/wp-gfm/releases and upload to /path/to
 
 ## PHP-Markdown (Recommended)
 
-This conversion depends on [PHP Markdown Lib 1.4](http://michelf.ca/projects/php-markdown/).
+This conversion depends on [PHP Markdown Lib 1.6](http://michelf.ca/projects/php-markdown/).
 
 ### Usage
 

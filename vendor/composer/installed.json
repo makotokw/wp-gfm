@@ -1,23 +1,23 @@
 [
     {
         "name": "michelf/php-markdown",
-        "version": "dev-lib",
-        "version_normalized": "dev-lib",
+        "version": "1.6.0",
+        "version_normalized": "1.6.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/michelf/php-markdown.git",
-            "reference": "6f952ee180e9bd345f3dd6005aa11e0f5dcbd1b8"
+            "reference": "156e56ee036505ec637d761ee62dc425d807183c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/michelf/php-markdown/zipball/6f952ee180e9bd345f3dd6005aa11e0f5dcbd1b8",
-            "reference": "6f952ee180e9bd345f3dd6005aa11e0f5dcbd1b8",
+            "url": "https://api.github.com/repos/michelf/php-markdown/zipball/156e56ee036505ec637d761ee62dc425d807183c",
+            "reference": "156e56ee036505ec637d761ee62dc425d807183c",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.0"
         },
-        "time": "2013-11-29 21:49:31",
+        "time": "2015-12-24 01:37:31",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -38,16 +38,16 @@
             {
                 "name": "Michel Fortin",
                 "email": "michel.fortin@michelf.ca",
-                "homepage": "http://michelf.ca/",
+                "homepage": "https://michelf.ca/",
                 "role": "Developer"
             },
             {
                 "name": "John Gruber",
-                "homepage": "http://daringfireball.net/"
+                "homepage": "https://daringfireball.net/"
             }
         ],
         "description": "PHP Markdown",
-        "homepage": "http://michelf.ca/projects/php-markdown/",
+        "homepage": "https://michelf.ca/projects/php-markdown/",
         "keywords": [
             "markdown"
         ]

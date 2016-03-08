@@ -4,7 +4,7 @@ namespace Gfm\Markdown;
 
 \Michelf\Markdown::MARKDOWNLIB_VERSION;
 
-class Extra extends \Michelf\_MarkdownExtra_TmpImpl
+class Extra extends \Michelf\MarkdownExtra
 {
 	public static $useAutoLinkExtras = false;
 	public static $fencedCodeBlocksTemplate = '<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>';
