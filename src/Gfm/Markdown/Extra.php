@@ -209,7 +209,7 @@ EOF;
 
 	protected function doAutoLinksExtra( $text ) {
 		$text = preg_replace_callback(
-			'{([^\'"])((https?|ftp|dict):[^\'">\s]+)}i',
+			'{((https?|ftp)://[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|])}i',
 			array( $this, '_doAutoLinks__extra_url_callback' ),
 			$text
 		);
@@ -219,7 +219,7 @@ EOF;
 	protected function _doAutoLinks__extra_url_callback( $matches ) {
 		$url = $this->encodeAttribute( $matches[1] );
 		$link = '<a href="' . $url . '">' . $url . '</a>';
-		return $matches[1] . $this->hashPart( $link );
+		return $this->hashPart( $link );
 	}
 
 	protected function doFencedCodeBlocks( $text ) {
