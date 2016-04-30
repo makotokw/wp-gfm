@@ -74,6 +74,14 @@ Example:
 [/markdown]
 ```
 
+#### Embed content
+
+Supported embed markdown file by ``[embed_markdown]`` shortcode.
+
+```
+[embed_markdown url="https://raw.githubusercontent.com/makotokw/wp-gfm/master/README.md"]
+```
+
 ### Option
 
  Admin > Settings > WP GFM
@@ -133,4 +141,4 @@ The MIT License
 
 The line below is used for the updater API, please leave it untouched unless bumping the version up :)
 
-~Current Version:0.7.3~
+~Current Version:0.8~

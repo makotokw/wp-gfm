@@ -1,6 +1,7 @@
 {
   "name": "wp-gfm",
   "description": "GitHub Flavored Markdown for WordPress",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/makotokw/wp-gfm"
