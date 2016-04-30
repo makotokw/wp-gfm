@@ -3,10 +3,10 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		exec: {
 			phpcs_plugin: {
-				cmd: 'phpcs --standard=WordPress *.php'
+				cmd: 'phpcs --standard=WordPress-Core markdown.php --report-width=200 -s'
 			},
 			phpcs_src: {
-				cmd: 'phpcs --standard=PSR2 src'
+				cmd: 'phpcs --standard=PSR2 src --report-width=200 -s'
 			}
 		},
 		compass: {

@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
  Version: 0.8
@@ -12,7 +12,7 @@
 class WP_GFM
 {
 	const NAME = 'WP_GFM';
-	const VERSION = '0.7.3';
+	const VERSION = '0.8';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
 	// google-code-prettify: https://code.google.com/p/google-code-prettify/
@@ -63,8 +63,10 @@ class WP_GFM
 		if ( class_exists( '\Gfm\Markdown\Extra' ) ) {
 			$this->has_converter = true;
 			\Gfm\Markdown\Extra::setElementCssPrefix( 'wp-gfm-' );
-			\Gfm\Markdown\Extra::$useAutoLinkExtras        = $this->gfm_options['php_md_use_autolink'] == true;
+			// @codingStandardsIgnoreStart
+			\Gfm\Markdown\Extra::$useAutoLinkExtras        = true == $this->gfm_options['php_md_use_autolink'];
 			\Gfm\Markdown\Extra::$fencedCodeBlocksTemplate = $this->gfm_options['php_md_fenced_code_blocks_template'];
+			// @codingStandardsIgnoreEnd
 		}
 
 		if ( $this->gfm_options['php_md_always_convert'] ) {
@@ -286,8 +288,8 @@ class WP_GFM
 
 	function the_content( $content ) {
 		if ( class_exists( '\Gfm\Markdown\Extra' ) ) {
-			if ( isset($GLOBALS['post']) ) {
-				if ( isset($GLOBALS['post']->ID) ) {
+			if ( isset( $GLOBALS['post'] ) ) {
+				if ( isset( $GLOBALS['post']->ID ) ) {
 					\Gfm\Markdown\Extra::setElementIdPrefix( 'post-' . $GLOBALS['post']->ID . '-md-' );
 				}
 			}
@@ -312,9 +314,9 @@ class WP_GFM
 		return $comment;
 	}
 
-	function convert_html_by_render_url( $renderUrl, $text ) {
+	function convert_html_by_render_url( $render_url, $text ) {
 		$response = wp_remote_request(
-			$renderUrl,
+			$render_url,
 			array(
 				'method'     => 'POST',
 				'timeout'    => 10,
@@ -325,13 +327,13 @@ class WP_GFM
 		);
 		if ( is_wp_error( $response ) ) {
 			$msg = self::NAME . ' HttpError: ' . $response->get_error_message();
-			error_log( $msg . ' on ' . $renderUrl );
+			error_log( $msg . ' on ' . $render_url );
 			return $msg;
 		}
 
-		if ( $response && isset($response['response']['code']) && 200 != $response['response']['code'] ) {
+		if ( $response && isset( $response['response']['code'] ) && 200 != $response['response']['code'] ) {
 			$msg = sprintf( self::NAME . ' HttpError: %s %s', $response['response']['code'], $response['response']['message'] );
-			error_log( $msg . ' on ' . $renderUrl );
+			error_log( $msg . ' on ' . $render_url );
 			return $msg;
 		}
 		return wp_remote_retrieve_body( $response );
@@ -407,7 +409,7 @@ function wp_markdown( $content ) {
 
 function wp_fgm( $content ) {
 	$p = WP_GFM::get_instance();
-	if ( ! empty($p->gfm_options['render_url']) ) {
+	if ( ! empty( $p->gfm_options['render_url'] ) ) {
 		return $p->shortcode_gfm( null, $content );
 	} else {
 		return $p->shortcode_markdown( null, $content );
