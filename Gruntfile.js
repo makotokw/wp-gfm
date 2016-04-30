@@ -10,17 +10,24 @@ module.exports = function(grunt) {
 			}
 		},
 		compass: {
+			options: {
+				basePath: 'sass',
+				httpPath: '/',
+				cssDir: '../css',
+				sassDir: '.',
+				imagesDir: '../images',
+				javascriptsDir: '../js',
+				outputStyle: 'expanded'
+			},
 			prod: {
 				options: {
-					basePath: 'sass',
-					environment: 'production',
+					noLineComments: true,
 					force: true
 				}
 			},
 			dev: {
 				options: {
-					basePath: 'sass',
-					environment: 'development',
+					noLineComments: false,
 					force: true,
 					trace: true
 				}

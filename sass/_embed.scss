@@ -1,0 +1,21 @@
+.markdown-file {
+  position: relative;
+  border: 1px solid #dedede;
+  border-radius: 3px;
+  margin: 1em 0;
+
+  .markdown-body {
+    padding: 20px;
+  }
+
+  .markdown-meta {
+    display: block;
+    padding: 9px 10px 10px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 17px;
+    background-color: #f5f5f5;
+    border: 1px solid #d8d8d8;
+    border-bottom: 0;
+  }
+}
