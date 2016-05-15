@@ -301,8 +301,8 @@ class WP_GFM
 	}
 
 	function the_content_ad( $context ) {
-		if ( strpos( $context, '<div class="markdown-content">' ) !== false ) {
-			return $context . '<div class="wp-gfm-ad"><span class="wp-gfm-powered-by">With Markdown By <a href="https://github.com/makotokw/wp-gfm" target="_blank">wp-gfm</a></span></div>';
+		if ( strpos( $context, '<div class="markdown-body markdown-content">' ) !== false ) {
+			return $context . '<div class="wp-gfm-ad"><span class="wp-gfm-powered-by">Markdown with by <a href="https://github.com/makotokw/wp-gfm" target="_blank">wp-gfm</a></span></div>';
 		}
 		return $context;
 	}
