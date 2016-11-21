@@ -1,18 +1,19 @@
 {
-	"name": "makotokw/wp-gfm",
-	"authors": [
-		{
-			"name": "Makoto Kawasaki",
-			"email": "makoto.kw@gmail.com"
-		}
-	],
-	"require": {
-		"php": ">=5.3",
-		"michelf/php-markdown": "1.6.*@dev"
-	},
-	"autoload": {
-		"psr-0": {
-			"": "src/"
-		}
-	}
+  "name": "makotokw/wp-gfm",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Makoto Kawasaki",
+      "email": "makoto.kw@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.3",
+    "michelf/php-markdown": "1.7.*@dev"
+  },
+  "autoload": {
+    "psr-0": {
+      "Gfm\\Markdown\\": "src/"
+    }
+  }
 }
