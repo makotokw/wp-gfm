@@ -9,8 +9,7 @@
  License: MIT
  */
 
-class WP_GFM
-{
+class WP_GFM {
 	const NAME = 'WP_GFM';
 	const VERSION = '0.8';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
@@ -302,7 +301,7 @@ class WP_GFM
 
 	function the_content_ad( $context ) {
 		if ( strpos( $context, '<div class="markdown-body markdown-content">' ) !== false ) {
-			return $context . '<div class="wp-gfm-ad"><span class="wp-gfm-powered-by">Markdown with by <a href="https://github.com/makotokw/wp-gfm" target="_blank">wp-gfm</a></span></div>';
+			return $context . '<div class="wp-gfm-ad"><span class="wp-gfm-powered-by">Markdown with by <img alt="❤" src="https://s.w.org/images/core/emoji/72x72/2764.png" width="10" height="10" scale="0"> <a href="https://github.com/makotokw/wp-gfm" target="_blank">wp-gfm</a></span></div>';
 		}
 		return $context;
 	}
