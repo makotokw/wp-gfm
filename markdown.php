@@ -17,10 +17,11 @@ class WP_GFM {
 	// google-code-prettify: https://code.google.com/p/google-code-prettify/
 	const FENCED_CODE_BLOCKS_TEMPLATE_FOR_GOOGLE_CODE_PRETTIFY = '<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>';
 
-	public $agent         = '';
-	public $url           = '';
+	public $agent = '';
+	public $url = '';
 	public $has_converter = false;
-	public $gfm_options   = array();
+	public $gfm_options = array();
+	public $ad_html = '';
 
 	static function get_instance() {
 		static $plugin = null;
@@ -52,6 +53,8 @@ class WP_GFM {
 		} else {
 			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_styles' ) );
 		}
+
+		$this->ad_html = '<div class="wp-gfm-ad"><span class="wp-gfm-powered-by">Markdown with by <img alt="❤" src="https://s.w.org/images/core/emoji/72x72/2764.png" width="10" height="10" scale="0"> <a href="https://github.com/makotokw/wp-gfm" target="_blank">wp-gfm</a></span></div>';
 	}
 
 	function wp_enqueue_styles() {
@@ -236,6 +239,12 @@ class WP_GFM {
 		return $content;
 	}
 
+	/**
+	 * @param $use_gfm
+	 * @param $atts
+	 * @param $content
+	 * @return string
+	 */
 	function shortcode_embed( $use_gfm, $atts, /** @noinspection PhpUnusedParameterInspection */ $content ) {
 		/**
 		 * @var string $url
@@ -259,15 +268,10 @@ class WP_GFM {
 				$url = '<a href="' . $url . '">' . $url . '</a>';
 			}
 
-			if ( $use_gfm ) {
-				return '<div class="markdown-file">'
-				. $this->shortcode_gfm( $atts, $body )
-				. '<div <div class="markdown-meta">' . $url . '</div></div>';
-			} else {
-				return '<div class="markdown-file">'
-				. $this->shortcode_markdown( $atts, $body )
-				. '<div <div class="markdown-meta">' . $url . '</div></div>';
-			}
+			return '<div class="markdown-file">'
+				. ($use_gfm ? $this->shortcode_gfm( $atts, $body ) : $this->shortcode_markdown( $atts, $body ))
+				. '<div class="markdown-meta">' . $url . $this->ad_html . '</div>'
+				. '</div>';
 		}
 		return '';
 	}
@@ -301,7 +305,7 @@ class WP_GFM {
 
 	function the_content_ad( $context ) {
 		if ( strpos( $context, '<div class="markdown-body markdown-content">' ) !== false ) {
-			return $context . '<div class="wp-gfm-ad"><span class="wp-gfm-powered-by">Markdown with by <img alt="❤" src="https://s.w.org/images/core/emoji/72x72/2764.png" width="10" height="10" scale="0"> <a href="https://github.com/makotokw/wp-gfm" target="_blank">wp-gfm</a></span></div>';
+			return $context . '<div class="wp-gfm-footer">' . $this->ad_html . '</div>';
 		}
 		return $context;
 	}
@@ -356,7 +360,8 @@ class WP_GFM {
 		<script type="text/javascript">
 			(function ($) {
 				if (typeof(QTags) != 'undefined') {
-					$.each(['markdown', 'gfm'], function (index, c) {
+					var ids = ['markdown', 'gfm'];
+					$.each(ids, function (index, c) {
 						QTags.addButton(c, '[' + c + ']', '[' + c + ']', '[/' + c + ']');
 					});
 				}
