@@ -1,16 +1,20 @@
+/* line 2, ../sass/_typography.scss */
 .markdown-content h1, .markdown-content h2, .markdown-content h3, .markdown-content h4, .markdown-content h5, .markdown-content h6 {
   clear: none;
   outline: none;
 }
+/* line 7, ../sass/_typography.scss */
 .markdown-content .footnotes hr {
   margin-bottom: 4px;
 }
+/* line 10, ../sass/_typography.scss */
 .markdown-content .footnotes ol {
   padding: 0;
   margin: 0 0 0 20px;
   font-size: .8em;
 }
 
+/* line 1, ../sass/_toc.scss */
 .wp-gfm-toc-content {
   background-color: #fefefe;
   border: 1px solid #ddd;
@@ -22,34 +26,42 @@
   display: table;
 }
 
+/* line 13, ../sass/_toc.scss */
 .wp-gfm-toc-content > ul {
   margin-top: 15px;
 }
+/* line 16, ../sass/_toc.scss */
 .wp-gfm-toc-content ul {
   padding: 0;
   margin: 0 0 0 20px;
 }
+/* line 20, ../sass/_toc.scss */
 .wp-gfm-toc-content li {
   margin: 0;
   font-size: 12px;
 }
+/* line 23, ../sass/_toc.scss */
 .wp-gfm-toc-content li li {
   margin-left: 1.5em;
   font-size: 10px;
 }
+/* line 28, ../sass/_toc.scss */
 .wp-gfm-toc-content a {
   color: #333;
   text-decoration: none;
 }
+/* line 31, ../sass/_toc.scss */
 .wp-gfm-toc-content a:hover {
   text-decoration: underline;
 }
+/* line 35, ../sass/_toc.scss */
 .wp-gfm-toc-content.right {
   float: right;
   margin-left: 12px;
   margin-right: 0;
   width: auto;
 }
+/* line 42, ../sass/_toc.scss */
 .wp-gfm-toc-content.left {
   float: left;
   margin-right: 12px;
@@ -57,32 +69,51 @@
   width: auto;
 }
 
-.wp-gfm-ad {
+/* line 1, ../sass/_footer.scss */
+.wp-gfm-footer {
   margin: 5px 0;
-  font-size: 12px;
-  text-align: right;
   clear: both;
 }
+
+/* line 5, ../sass/_footer.scss */
+.wp-gfm-ad {
+  display: inline;
+  float: right;
+  font-size: 12px;
+  text-align: right;
+}
+/* line 10, ../sass/_footer.scss */
 .wp-gfm-ad .wp-gfm-powered-by {
-  color: #999;
+  color: #767676;
+}
+/* line 13, ../sass/_footer.scss */
+.wp-gfm-ad img {
+  margin: 0;
+}
+/* line 16, ../sass/_footer.scss */
+.wp-gfm-ad a {
+  font-weight: bold;
 }
 
+/* line 1, ../sass/_embed.scss */
 .markdown-file {
   position: relative;
   border: 1px solid #dedede;
   border-radius: 3px;
   margin: 1em 0;
 }
+/* line 7, ../sass/_embed.scss */
 .markdown-file .markdown-body {
   padding: 20px;
 }
+/* line 11, ../sass/_embed.scss */
 .markdown-file .markdown-meta {
+  clear: both;
   display: block;
   padding: 9px 10px 10px;
   margin: 0;
   font-size: 14px;
   line-height: 17px;
   background-color: #f5f5f5;
-  border: 1px solid #d8d8d8;
-  border-bottom: 0;
+  border-top: 1px solid #dedede;
 }

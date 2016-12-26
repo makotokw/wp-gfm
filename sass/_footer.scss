@@ -1,10 +1,19 @@
-.wp-gfm-ad {
+.wp-gfm-footer {
   margin: 5px 0;
+  clear: both;
+}
+.wp-gfm-ad {
+  display: inline;
+  float: right;
   font-size: 12px;
   text-align: right;
-  clear: both;
-
   .wp-gfm-powered-by {
-    color: #999;
+    color: #767676;
+  }
+  img {
+    margin: 0;
+  }
+  a {
+    font-weight: bold;
   }
 }
