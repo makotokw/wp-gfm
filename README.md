@@ -123,7 +123,7 @@ Use ``[gfm][/gfm]`` as shortcode on entry.
 
 ## Result
 
-![Result](https://dl.dropbox.com/u/8932138/screenshot/wp-gfm/wp-gfm_2013-04-08_2027.png)
+![Result](https://raw.githubusercontent.com/makotokw/wp-gfm/master/screenshot-1.png)
 
 
 ## Development
