@@ -11,7 +11,7 @@
 
 class WP_GFM {
 	const NAME = 'WP_GFM';
-	const VERSION = '0.9';
+	const VERSION = '0.10';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
 	// google-code-prettify: https://code.google.com/p/google-code-prettify/

@@ -59,6 +59,11 @@
 
 .wp-gfm-footer {
   margin: 5px 0;
+  *zoom: 1;
+}
+.wp-gfm-footer:after {
+  content: "";
+  display: table;
   clear: both;
 }
 
@@ -96,4 +101,11 @@
   line-height: 17px;
   background-color: #f5f5f5;
   border-top: 1px solid #dedede;
+}
+
+@media (max-width: 480px) {
+  .wp-gfm-toc-content.right, .wp-gfm-toc-content.left {
+    margin: 10px 5px;
+    float: none;
+  }
 }
