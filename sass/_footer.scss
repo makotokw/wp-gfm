@@ -1,6 +1,10 @@
 .wp-gfm-footer {
   margin: 5px 0;
+}
+.wp-gfm-footer::after {
+  content: '';
   clear: both;
+  display: block;
 }
 .wp-gfm-ad {
   display: inline;
