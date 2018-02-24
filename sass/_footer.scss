@@ -1,6 +1,6 @@
 .wp-gfm-footer {
   margin: 5px 0;
-  clear: both;
+  @include pie-clearfix;
 }
 .wp-gfm-ad {
   display: inline;
