@@ -54,7 +54,7 @@ class WP_GFM {
 			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_styles' ) );
 		}
 
-		$this->ad_html = '<div class="wp-gfm-ad"><span class="wp-gfm-powered-by">Markdown with by <img alt="❤" src="https://s.w.org/images/core/emoji/72x72/2764.png" width="10" height="10"> <a href="https://github.com/makotokw/wp-gfm" target="_blank">wp-gfm</a></span></div>';
+		$this->ad_html = '<div class="wp-gfm-ad"><span class="wp-gfm-powered-by">Markdown with by <img alt="❤" src="https://s.w.org/images/core/emoji/72x72/2764.png" width="10" height="10"> <a href="https://github.com/makotokw/wp-gfm" target="_blank" rel="nofollow noopener" title="makotokw/wp-gfm">wp-gfm</a></span></div>';
 	}
 
 	function wp_enqueue_styles() {
@@ -216,7 +216,7 @@ class WP_GFM {
 		echo '<textarea id="gfm_php_md_fenced_code_blocks_template" name="gfm_array[php_md_fenced_code_blocks_template]" class="large-text">' . $value . '</textarea>'
 			. '<p class="description">'
 			. '{{lang}}, {{title}}, {{codeblock}}<br/>'
-			. 'For <a href="https://code.google.com/p/google-code-prettify/" target="_blank">google-code-prettify</a>: <code>' . esc_attr( self::FENCED_CODE_BLOCKS_TEMPLATE_FOR_GOOGLE_CODE_PRETTIFY ) . '</code><br/>'
+			. 'For <a href="https://code.google.com/p/google-code-prettify/" target="_blank" rel="noopener">google-code-prettify</a>: <code>' . esc_attr( self::FENCED_CODE_BLOCKS_TEMPLATE_FOR_GOOGLE_CODE_PRETTIFY ) . '</code><br/>'
 			. '</p>';
 	}
 
