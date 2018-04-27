@@ -78,6 +78,7 @@
 }
 .wp-gfm-ad img {
   margin: 0;
+  display: inline;
 }
 .wp-gfm-ad a {
   font-weight: bold;
