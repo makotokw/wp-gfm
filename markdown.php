@@ -1,4 +1,5 @@
 <?php
+
 /**
  Plugin Name: GitHub Flavored Markdown for WordPress
  Plugin URI: https://github.com/makotokw/wp-gfm
@@ -8,7 +9,6 @@
  Author URI: http://makotokw.com/
  License: MIT
  */
-
 class WP_GFM {
 	const NAME = 'WP_GFM';
 	const VERSION = '0.11';
@@ -269,7 +269,7 @@ class WP_GFM {
 			}
 
 			return '<div class="markdown-file">'
-				. ($use_gfm ? $this->shortcode_gfm( $atts, $body ) : $this->shortcode_markdown( $atts, $body ))
+				. ( $use_gfm ? $this->shortcode_gfm( $atts, $body ) : $this->shortcode_markdown( $atts, $body ) )
 				. '<div class="markdown-meta">' . $url . $this->ad_html . '</div>'
 				. '</div>';
 		}
@@ -298,8 +298,20 @@ class WP_GFM {
 			}
 		}
 
-		$content = preg_replace_callback( '/\[markdown\](.*?)\[\/markdown\]/s', create_function( '$matches', 'return wp_markdown($matches[1]);' ), $content );
-		$content = preg_replace_callback( '/\[gfm\](.*?)\[\/gfm\]/s', create_function( '$matches', 'return wp_fgm($matches[1]);' ), $content );
+		$content = preg_replace_callback(
+			'/\[markdown\](.*?)\[\/markdown\]/s',
+			function ( $matches ) {
+				return wp_markdown( $matches[1] );
+			},
+			$content
+		);
+		$content = preg_replace_callback(
+			'/\[gfm\](.*?)\[\/gfm\]/s',
+			function ( $matches ) {
+				return wp_fgm( $matches[1] );
+			},
+			$content
+		);
 		return $content;
 	}
 
