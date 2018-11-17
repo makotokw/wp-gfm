@@ -74,11 +74,13 @@ class WP_GFM {
 		if ( $this->gfm_options['php_md_always_convert'] ) {
 			add_action( 'the_content', array( $this, 'force_convert' ), 7 );
 		} else {
-			add_action( 'the_content', array( $this, 'the_content' ), 7 );
+			add_filter( 'no_texturize_shortcodes', array( $this, 'shortcodes_to_exempt_from_wptexturize' ) );
+			add_shortcode( 'markdown', array( $this, 'shortcode_markdown' ) );
+			add_shortcode( 'gfm', array( $this, 'shortcode_gfm' ) );
 		}
 
 		if ( $this->gfm_options['general_ad'] ) {
-			add_action( 'the_content', array( $this, 'the_content_ad' ), 8 );
+			add_action( 'the_content', array( $this, 'the_content_ad' ), 20 );
 		}
 
 		add_shortcode( 'embed_markdown', array( $this, 'shortcode_embed_markdown' ) );
@@ -228,11 +230,19 @@ class WP_GFM {
 		echo '<input type="text" id="gfm_render_url" name="gfm_array[render_url]" value="' . $value . '" class="regular-text"/>';
 	}
 
+	function shortcodes_to_exempt_from_wptexturize( $shortcodes ) {
+		$shortcodes[] = 'markdown';
+		$shortcodes[] = 'gfm';
+		return $shortcodes;
+	}
+
 	function shortcode_gfm( /** @noinspection PhpUnusedParameterInspection */ $atts, $content = '' ) {
+		$content = do_shortcode( $content );
 		return '<div class="markdown-body gfm-content">' . $this->convert_html_by_render_url( $this->gfm_options['render_url'], $content ) . '</div>';
 	}
 
 	function shortcode_markdown( /** @noinspection PhpUnusedParameterInspection */ $atts, $content = '' ) {
+		$content = do_shortcode( $content );
 		if ( $this->has_converter ) {
 			return '<div class="markdown-body markdown-content">' . \Gfm\Markdown\Extra::defaultTransform( $content ) . '</div>';
 		}
@@ -371,7 +381,7 @@ class WP_GFM {
 		?>
 		<script type="text/javascript">
 			(function ($) {
-				if (typeof(QTags) != 'undefined') {
+				if (typeof(QTags) !== 'undefined') {
 					var ids = ['markdown', 'gfm'];
 					$.each(ids, function (index, c) {
 						QTags.addButton(c, '[' + c + ']', '[' + c + ']', '[/' + c + ']');
