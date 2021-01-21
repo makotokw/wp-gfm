@@ -8,7 +8,7 @@
 .markdown-content .footnotes ol {
   padding: 0;
   margin: 0 0 0 20px;
-  font-size: .8em;
+  font-size: 0.8em;
 }
 
 .wp-gfm-toc-content {
@@ -110,3 +110,5 @@
     float: none;
   }
 }
+
+/*# sourceMappingURL=style-index.css.map*/

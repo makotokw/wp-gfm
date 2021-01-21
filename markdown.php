@@ -58,7 +58,7 @@ class WP_GFM {
 	}
 
 	function wp_enqueue_styles() {
-		wp_enqueue_style( 'wp-gfm', $this->url . '/css/markdown.css', array(), self::VERSION );
+		wp_enqueue_style( 'wp-gfm', $this->url . '/build/style-index.css', array(), self::VERSION );
 	}
 
 	function php_markdown_init() {

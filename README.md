@@ -129,8 +129,8 @@ Use ``[gfm][/gfm]`` as shortcode on entry.
 ## Development
 
 ```
-npm install
-grunt debug
+yarn install
+yarn run start
 ```
 
 ## LICENSE

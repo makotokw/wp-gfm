@@ -2,8 +2,11 @@ $screen-mobile: 480px;
 
 // Mobile devices
 @media (max-width: $screen-mobile) {
+
 	.wp-gfm-toc-content {
-		&.right, &.left {
+
+		&.right,
+		&.left {
 			margin: 10px 5px;
 			float: none;
 		}
