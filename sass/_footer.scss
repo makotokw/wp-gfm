@@ -1,20 +1,20 @@
 .wp-gfm-footer {
-  margin: 5px 0;
-  @include pie-clearfix;
+	margin: 5px 0;
+	@include pie-clearfix;
 }
 .wp-gfm-ad {
-  display: inline;
-  float: right;
-  font-size: 12px;
-  text-align: right;
-  .wp-gfm-powered-by {
-    color: #767676;
-  }
-  img {
-    margin: 0;
-    display: inline;
-  }
-  a {
-    font-weight: bold;
-  }
+	display: inline;
+	float: right;
+	font-size: 12px;
+	text-align: right;
+	.wp-gfm-powered-by {
+		color: #767676;
+	}
+	img {
+		margin: 0;
+		display: inline;
+	}
+	a {
+		font-weight: bold;
+	}
 }

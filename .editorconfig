@@ -2,23 +2,21 @@
 # coding styles between different editors and IDEs
 # editorconfig.org
 
+# WordPress Coding Standards
+# https://make.wordpress.org/core/handbook/coding-standards/
+
 root = true
 
 [*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
 
-# Change these settings to your own preference
+[*.yml]
 indent_style = space
 indent_size = 2
 
-# We recommend you to keep these unchanged
-end_of_line = lf
-charset = utf-8
-trim_trailing_whitespace = true
-insert_final_newline = true
-
 [*.md]
 trim_trailing_whitespace = false
-
-# https://make.wordpress.org/core/handbook/best-practices/coding-standards/php/
-[*.php]
-indent_style = tab

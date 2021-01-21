@@ -1,4 +1,11 @@
-tmp/
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
 node_modules/
+
+tmp/
 .sass-cache/
 .DS_Store
