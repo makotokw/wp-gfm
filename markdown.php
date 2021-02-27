@@ -1,14 +1,23 @@
 <?php
 
+use Gfm\Markdown\Extra;
+
 /**
- Plugin Name: GitHub Flavored Markdown for WordPress
- Plugin URI: https://github.com/makotokw/wp-gfm
- Version: 0.11
- Description: Converts block in GitHub Flavored Markdown by using shortcode <code>[gfm]</code> and support PHP-Markdown by using shortcode <code>[markdown]</code>
- Author: makoto_kw
- Author URI: http://makotokw.com/
- License: MIT
+ * Plugin Name: GitHub Flavored Markdown for WordPress
+ * Plugin URI: https://github.com/makotokw/wp-gfm
+ * Version: 0.11
+ * Description: Converts block in GitHub Flavored Markdown by using shortcode <code>[gfm]</code> and support PHP-Markdown by using shortcode <code>[markdown]</code>
+ * Author: makoto_kw
+ * Author URI: https://www.makotokw.com/
+ * License: MIT
+ * Requires at least: 3.1
+ * Requires PHP: 5.3.3
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Invalid request.' );
+}
+
 class WP_GFM {
 	const NAME = 'WP_GFM';
 	const VERSION = '0.11';
@@ -62,25 +71,27 @@ class WP_GFM {
 	}
 
 	function php_markdown_init() {
-		if ( class_exists( '\Gfm\Markdown\Extra' ) ) {
+		if ( class_exists( Extra::class ) ) {
 			$this->has_converter = true;
-			\Gfm\Markdown\Extra::setElementCssPrefix( 'wp-gfm-' );
+			Extra::setElementCssPrefix( 'wp-gfm-' );
 			// @codingStandardsIgnoreStart
-			\Gfm\Markdown\Extra::$useAutoLinkExtras        = true == $this->gfm_options['php_md_use_autolink'];
-			\Gfm\Markdown\Extra::$fencedCodeBlocksTemplate = $this->gfm_options['php_md_fenced_code_blocks_template'];
+			Extra::$useAutoLinkExtras        = true == $this->gfm_options['php_md_use_autolink'];
+			Extra::$fencedCodeBlocksTemplate = $this->gfm_options['php_md_fenced_code_blocks_template'];
 			// @codingStandardsIgnoreEnd
 		}
 
 		if ( $this->gfm_options['php_md_always_convert'] ) {
 			add_action( 'the_content', array( $this, 'force_convert' ), 7 );
 		} else {
-			add_filter( 'no_texturize_shortcodes', array( $this, 'shortcodes_to_exempt_from_wptexturize' ) );
-			add_shortcode( 'markdown', array( $this, 'shortcode_markdown' ) );
-			add_shortcode( 'gfm', array( $this, 'shortcode_gfm' ) );
+			// should do shortcode before wpautop filter
+			add_action( 'the_content', array( $this, 'do_markdown_shortcode' ), 7 );
+			//add_filter( 'no_texturize_shortcodes', array( $this, 'shortcodes_to_exempt_from_wptexturize' ) );
+			//add_shortcode( 'markdown', array( $this, 'shortcode_markdown' ) );
+			//add_shortcode( 'gfm', array( $this, 'shortcode_gfm' ) );
 		}
 
 		if ( $this->gfm_options['general_ad'] ) {
-			add_action( 'the_content', array( $this, 'the_content_ad' ), 20 );
+			add_action( 'the_content', array( $this, 'append_plugin_ad' ), 20 );
 		}
 
 		add_shortcode( 'embed_markdown', array( $this, 'shortcode_embed_markdown' ) );
@@ -179,7 +190,7 @@ class WP_GFM {
 				<?php submit_button(); ?>
 			</form>
 		</div>
-	<?php
+		<?php
 	}
 
 	function option_sanitize_gfm( $input ) {
@@ -244,7 +255,7 @@ class WP_GFM {
 	function shortcode_markdown( /** @noinspection PhpUnusedParameterInspection */ $atts, $content = '' ) {
 		$content = do_shortcode( $content );
 		if ( $this->has_converter ) {
-			return '<div class="markdown-body markdown-content">' . \Gfm\Markdown\Extra::defaultTransform( $content ) . '</div>';
+			$content = '<div class="markdown-body markdown-content">' . Extra::defaultTransform( $content ) . '</div>';
 		}
 		return $content;
 	}
@@ -286,37 +297,37 @@ class WP_GFM {
 		return '';
 	}
 
-	function shortcode_embed_gfm( $atts, /** @noinspection PhpUnusedParameterInspection */ $content ) {
+	function shortcode_embed_gfm( $atts, $content ) {
 		return $this->shortcode_embed( true, $atts, $content );
 	}
 
-	function shortcode_embed_markdown( $atts, /** @noinspection PhpUnusedParameterInspection */ $content ) {
+	function shortcode_embed_markdown( $atts, $content ) {
 		return $this->shortcode_embed( false, $atts, $content );
 	}
 
 	function force_convert( $content ) {
-		$content = preg_replace( '{\[/?markdown\]}', '', $content );
+		$content = preg_replace( '{\[/?markdown]}', '', $content );
 		return wp_markdown( $content );
 	}
 
-	function the_content( $content ) {
-		if ( class_exists( '\Gfm\Markdown\Extra' ) ) {
+	function do_markdown_shortcode( $content ) {
+		if ( class_exists( Extra::class ) ) {
 			if ( isset( $GLOBALS['post'] ) ) {
 				if ( isset( $GLOBALS['post']->ID ) ) {
-					\Gfm\Markdown\Extra::setElementIdPrefix( 'post-' . $GLOBALS['post']->ID . '-md-' );
+					Extra::setElementIdPrefix( 'post-' . $GLOBALS['post']->ID . '-md-' );
 				}
 			}
 		}
 
 		$content = preg_replace_callback(
-			'/\[markdown\](.*?)\[\/markdown\]/s',
+			'/\[markdown](.*?)\[\/markdown]/s',
 			function ( $matches ) {
 				return wp_markdown( $matches[1] );
 			},
 			$content
 		);
 		$content = preg_replace_callback(
-			'/\[gfm\](.*?)\[\/gfm\]/s',
+			'/\[gfm](.*?)\[\/gfm]/s',
 			function ( $matches ) {
 				return wp_fgm( $matches[1] );
 			},
@@ -325,7 +336,7 @@ class WP_GFM {
 		return $content;
 	}
 
-	function the_content_ad( $context ) {
+	function append_plugin_ad( $context ) {
 		if ( strpos( $context, '<div class="markdown-body markdown-content">' ) !== false ) {
 			return $context . '<div class="wp-gfm-footer">' . $this->ad_html . '</div>';
 		}
@@ -334,7 +345,7 @@ class WP_GFM {
 
 	function pre_comment_content( $comment ) {
 		$comment = stripslashes( $comment );
-		$comment = $this->the_content( $comment );
+		$comment = $this->do_markdown_shortcode( $comment );
 		$comment = addslashes( $comment );
 		return $comment;
 	}
@@ -389,7 +400,7 @@ class WP_GFM {
 				}
 			})(jQuery);
 		</script>
-	<?php
+		<?php
 	}
 }
 
