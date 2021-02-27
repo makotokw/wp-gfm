@@ -1,6 +1,6 @@
 <?php
 
-use Gfm\Markdown\Extra;
+use Makotokw\WordPress\Gfm\Gfm;
 
 /**
  * Plugin Name: GitHub Flavored Markdown for WordPress
@@ -71,12 +71,12 @@ class WP_GFM {
 	}
 
 	function php_markdown_init() {
-		if ( class_exists( Extra::class ) ) {
+		if ( class_exists( Gfm::class ) ) {
 			$this->has_converter = true;
-			Extra::setElementCssPrefix( 'wp-gfm-' );
+			Gfm::setElementCssPrefix( 'wp-gfm-' );
 			// @codingStandardsIgnoreStart
-			Extra::$useAutoLinkExtras        = true == $this->gfm_options['php_md_use_autolink'];
-			Extra::$fencedCodeBlocksTemplate = $this->gfm_options['php_md_fenced_code_blocks_template'];
+			Gfm::$useAutoLinkExtras        = true == $this->gfm_options['php_md_use_autolink'];
+			Gfm::$fencedCodeBlocksTemplate = $this->gfm_options['php_md_fenced_code_blocks_template'];
 			// @codingStandardsIgnoreEnd
 		}
 
@@ -255,7 +255,7 @@ class WP_GFM {
 	function shortcode_markdown( /** @noinspection PhpUnusedParameterInspection */ $atts, $content = '' ) {
 		$content = do_shortcode( $content );
 		if ( $this->has_converter ) {
-			$content = '<div class="markdown-body markdown-content">' . Extra::defaultTransform( $content ) . '</div>';
+			$content = '<div class="markdown-body markdown-content">' . Gfm::defaultTransform( $content ) . '</div>';
 		}
 		return $content;
 	}
@@ -311,10 +311,10 @@ class WP_GFM {
 	}
 
 	function do_markdown_shortcode( $content ) {
-		if ( class_exists( Extra::class ) ) {
+		if ( class_exists( Gfm::class ) ) {
 			if ( isset( $GLOBALS['post'] ) ) {
 				if ( isset( $GLOBALS['post']->ID ) ) {
-					Extra::setElementIdPrefix( 'post-' . $GLOBALS['post']->ID . '-md-' );
+					Gfm::setElementIdPrefix( 'post-' . $GLOBALS['post']->ID . '-md-' );
 				}
 			}
 		}

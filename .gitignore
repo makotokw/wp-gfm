@@ -6,6 +6,10 @@ yarn-error.log*
 # Dependency directories
 node_modules/
 
+vendor/
+!vendor/autoload.php
+!vendor/composer/
+!vendor/michelf/php-markdown/Michelf/
 tmp/
 .sass-cache/
 .DS_Store

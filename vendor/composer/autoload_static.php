@@ -6,27 +6,35 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit9facfe8654e0f473520ec5a6fb803482
 {
-    public static $prefixesPsr0 = array (
+    public static $prefixLengthsPsr4 = array (
         'M' => 
         array (
-            'Michelf' => 
-            array (
-                0 => __DIR__ . '/..' . '/michelf/php-markdown',
-            ),
+            'Michelf\\' => 8,
+            'Makotokw\\WordPress\\Gfm\\' => 23,
         ),
-        'G' => 
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'Michelf\\' => 
         array (
-            'Gfm\\Markdown\\' => 
-            array (
-                0 => __DIR__ . '/../..' . '/src',
-            ),
+            0 => __DIR__ . '/..' . '/michelf/php-markdown/Michelf',
         ),
+        'Makotokw\\WordPress\\Gfm\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/Gfm',
+        ),
+    );
+
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit9facfe8654e0f473520ec5a6fb803482::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit9facfe8654e0f473520ec5a6fb803482::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit9facfe8654e0f473520ec5a6fb803482::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit9facfe8654e0f473520ec5a6fb803482::$classMap;
 
         }, null, ClassLoader::class);
     }

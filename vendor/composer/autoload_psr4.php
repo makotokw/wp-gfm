@@ -6,4 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Michelf\\' => array($vendorDir . '/michelf/php-markdown/Michelf'),
+    'Makotokw\\WordPress\\Gfm\\' => array($baseDir . '/src/Gfm'),
 );

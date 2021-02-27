@@ -1,10 +1,10 @@
 <?php
 
-namespace Gfm\Markdown;
+namespace Makotokw\WordPress\Gfm;
 
 use Michelf\MarkdownExtra;
 
-class Extra extends MarkdownExtra
+class Gfm extends MarkdownExtra
 {
 	public static $useAutoLinkExtras = false;
 	public static $fencedCodeBlocksTemplate = '<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>';

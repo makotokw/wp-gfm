@@ -6,6 +6,4 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Michelf' => array($vendorDir . '/michelf/php-markdown'),
-    'Gfm\\Markdown\\' => array($baseDir . '/src'),
 );
