@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="wp-gfm" xsi:noNamespaceSchemaLocation="phpcs.xsd">
+	<description>The coding standard for wp-gfm.</description>
+
+	<file>markdown.php</file>
+	<file>updater.php</file>
+	<file>src/Gfm</file>
+	<file>vendor/michelf/php-markdown/Michelf</file>
+
+	<arg name="colors"/>
+	<arg value="np"/>
+
+	<rule ref="PHPCompatibilityWP"/>
+	<config name="testVersion" value="5.5-"/>
+
+</ruleset>

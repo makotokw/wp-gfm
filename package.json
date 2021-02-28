@@ -10,6 +10,7 @@
 	"scripts": {
 		"build": "wp-scripts build",
 		"format:js": "wp-scripts format-js",
+		"lint:php": "vendor/bin/phpcs",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
 		"start": "wp-scripts start",

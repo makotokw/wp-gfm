@@ -11,7 +11,7 @@ use Makotokw\WordPress\Gfm\Gfm;
  * Author URI: https://www.makotokw.com/
  * License: MIT
  * Requires at least: 3.1
- * Requires PHP: 5.3.3
+ * Requires PHP: 5.5
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -66,7 +66,7 @@ class WP_GFM {
 	public static function get_instance() {
 		static $plugin = null;
 		if ( ! $plugin ) {
-			$plugin = new WP_GFM();
+			$plugin = new static();
 		}
 		return $plugin;
 	}
