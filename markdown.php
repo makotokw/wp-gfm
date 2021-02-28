@@ -22,15 +22,6 @@ class WP_GFM {
 	const VERSION = '0.11';
 	const DEFAULT_RENDER_URL = 'https://api.github.com/markdown/raw';
 
-	// google-code-prettify: https://code.google.com/p/google-code-prettify/
-	const FENCED_CODE_BLOCKS_TEMPLATE_FOR_GOOGLE_CODE_PRETTIFY = '<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>';
-
-	/**
-	 * asset file info
-	 * @var array
-	 */
-	private $asset_file;
-
 	/**
 	 * whether has markdown converter
 	 * (succeeded autoload)
@@ -48,6 +39,11 @@ class WP_GFM {
 	 * @var string
 	 */
 	private $url;
+
+	/**
+	 * @var array
+	 */
+	private $syntax_highlight_libs;
 
 	/**
 	 * plugin settings in Admin page
@@ -73,18 +69,40 @@ class WP_GFM {
 
 	private function __construct() {
 		$this->agent = self::class . '/' . self::VERSION;
-		$this->asset_file = include( __DIR__ . '/build/index.asset.php' );
 		$this->url   = plugins_url( '', __FILE__ );
-		$this->gfm_options = wp_parse_args(
-			(array) get_option( 'gfm' ),
-			array(
-				'general_ad' => false,
-				'php_md_always_convert' => false,
-				'php_md_use_autolink' => false,
-				'php_md_fenced_code_blocks_template' => self::FENCED_CODE_BLOCKS_TEMPLATE_FOR_GOOGLE_CODE_PRETTIFY,
-				'render_url' => self::DEFAULT_RENDER_URL,
-			)
+
+		$this->syntax_highlight_libs = array();
+		$this->syntax_highlight_libs['codeprettify'] = array(
+			'name' => 'Google Code Prettify',
+			'url' => 'https://github.com/googlearchive/code-prettify',
+			'format' => '<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>',
 		);
+		$this->syntax_highlight_libs['highlightjs'] = array(
+			'name' => 'highlight.js',
+			'url' => 'https://highlightjs.org/',
+			'format' => '<pre><code class="{{lang}}">{{codeblock}}</code></pre>',
+		);
+		$this->syntax_highlight_libs['prism'] = array(
+			'name' => 'Prism',
+			'url' => 'https://prismjs.com/',
+			'format' => '<pre><code class="language-{{lang}}">{{codeblock}}</code></pre>',
+		);
+		$this->syntax_highlight_libs['none'] = array(
+			'name' => 'None',
+			'format' => '<pre class="lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>',
+		);
+
+		// sets default value for Code completion
+		$this->gfm_options = array(
+			'general_ad' => false,
+			'php_md_always_convert' => false,
+			'php_md_use_autolink' => false,
+			'syntax_highlight' => 'codeprettify',
+			'overwrite_fenced_code_blocks_template' => false,
+			'php_md_fenced_code_blocks_template' => $this->syntax_highlight_libs['codeprettify']['format'],
+			'render_url' => self::DEFAULT_RENDER_URL,
+		);
+
 		$this->ad_html = '<div class="wp-gfm-ad"><span class="wp-gfm-powered-by">Markdown with by <img alt="❤" src="https://s.w.org/images/core/emoji/72x72/2764.png" width="10" height="10"> <a href="https://github.com/makotokw/wp-gfm" target="_blank" rel="nofollow noopener" title="makotokw/wp-gfm">wp-gfm</a></span></div>';
 
 		$this->init();
@@ -96,15 +114,24 @@ class WP_GFM {
 			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 			add_action( 'admin_print_footer_scripts', array( $this, 'admin_quicktags' ) );
 		} else {
-			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_styles' ) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_assets' ) );
 		}
+
+		$this->gfm_options = wp_parse_args(
+			(array) get_option( 'gfm' ),
+			$this->gfm_options
+		);
 
 		if ( class_exists( Gfm::class ) ) {
 			$this->has_converter = true;
 			Gfm::setElementCssPrefix( 'wp-gfm-' );
 			// @codingStandardsIgnoreStart
 			Gfm::$useAutoLinkExtras        = true == $this->gfm_options['php_md_use_autolink'];
-			Gfm::$fencedCodeBlocksTemplate = $this->gfm_options['php_md_fenced_code_blocks_template'];
+			if ( $this->gfm_options['overwrite_fenced_code_blocks_template']) {
+				Gfm::$fencedCodeBlocksTemplate = $this->gfm_options['php_md_fenced_code_blocks_template'];
+			} else {
+				Gfm::$fencedCodeBlocksTemplate = $this->syntax_highlight_libs[$this->gfm_options['syntax_highlight']]['format'];
+			}
 			// @codingStandardsIgnoreEnd
 		}
 
@@ -129,8 +156,17 @@ class WP_GFM {
 	/**
 	 * wp_enqueue_scripts action
 	 */
-	public function wp_enqueue_styles() {
-		wp_enqueue_style( 'wp-gfm', $this->url . '/build/style-index.css', array(), $this->asset_file['version'] );
+	public function wp_enqueue_assets() {
+		$index_asset = include( __DIR__ . '/build/index.asset.php' );
+		wp_enqueue_style( 'wp-gfm', $this->url . '/build/style-index.css', array(), $index_asset['version'] );
+
+		$sh_lib = strtolower( $this->gfm_options['syntax_highlight'] );
+		if ( 'none' !== $sh_lib ) {
+			/** @noinspection PhpIncludeInspection */
+			$sh_asset = include( __DIR__ . "build/sh-{$sh_lib}.asset.php" );
+			wp_enqueue_script( "wp-gfm-sh-{$sh_lib}", $this->url . "/build/sh-{$sh_lib}.js", false, $sh_asset['version'], false );
+			wp_enqueue_style( "wp-gfm-sh-{$sh_lib}", $this->url . "/build/sh-{$sh_lib}.css", array(), $sh_asset['version'] );
+		}
 	}
 
 	/**
@@ -139,6 +175,7 @@ class WP_GFM {
 	public function admin_init() {
 		register_setting( 'gfm_option_group', 'gfm_array', array( $this, 'option_sanitize_gfm' ) );
 
+		// general
 		add_settings_section(
 			'setting_section_general',
 			'General',
@@ -154,6 +191,7 @@ class WP_GFM {
 			'setting_section_general'
 		);
 
+		// markdown
 		add_settings_section(
 			'setting_section_php_markdown',
 			'PHP Markdown',
@@ -162,29 +200,46 @@ class WP_GFM {
 		);
 
 		add_settings_field(
-			'php_md_always_convert',
+			'always_convert',
 			'',
-			array( $this, 'print_gfm_php_md_always_convert_field' ),
+			array( $this, 'print_always_convert_field' ),
 			'gfm-setting-admin',
 			'setting_section_php_markdown'
 		);
 
 		add_settings_field(
-			'php_md_use_autolink',
+			'autolink',
 			'',
-			array( $this, 'print_gfm_php_md_use_autolink_field' ),
+			array( $this, 'print_autolink_field' ),
 			'gfm-setting-admin',
 			'setting_section_php_markdown'
+		);
+
+		// Fenced Code Blocks
+		add_settings_section(
+			'setting_section_fenced_code_blocks',
+			'Fenced Code Blocks',
+			array( $this, 'print_section_fenced_code_blocks' ),
+			'gfm-setting-admin'
 		);
 
 		add_settings_field(
-			'php_md_fenced_code_blocks_template',
-			'Fenced Code Blocks Template',
-			array( $this, 'print_gfm_php_md_fenced_code_blocks_template_field' ),
+			'syntax_highlight',
+			'Syntax Highlight',
+			array( $this, 'print_syntax_highlight_field' ),
 			'gfm-setting-admin',
-			'setting_section_php_markdown'
+			'setting_section_fenced_code_blocks'
 		);
 
+		add_settings_field(
+			'fenced_code_blocks_template',
+			'HTML Template',
+			array( $this, 'print_fenced_code_blocks_template_field' ),
+			'gfm-setting-admin',
+			'setting_section_fenced_code_blocks'
+		);
+
+		// gfm
 		add_settings_section(
 			'setting_section_gfm',
 			'GitHub Flavored Markdown',
@@ -265,8 +320,8 @@ class WP_GFM {
 	 * @see add_settings_field
 	 */
 	public function print_gfm_general_ad_field() {
-		echo '<input type="checkbox" id="general_ad" name="gfm_array[general_ad]" value="1" class="code" '
-			. checked( 1, $this->gfm_options['general_ad'], false ) . ' /> Add a link of wp-gfm plugin to content';
+		echo '<label for="gfm_general_ad"><input type="checkbox" id="gfm_general_ad" name="gfm_array[general_ad]" value="1" '
+			. checked( 1, $this->gfm_options['general_ad'], false ) . ' > Add a link of wp-gfm plugin to content</label>';
 	}
 
 	/**
@@ -280,9 +335,9 @@ class WP_GFM {
 	 * add_settings_field callback
 	 * @see add_settings_field
 	 */
-	public function print_gfm_php_md_always_convert_field() {
-		echo '<input type="checkbox" id="php_md_always_convert" name="gfm_array[php_md_always_convert]" value="1" class="code" '
-			. checked( 1, $this->gfm_options['php_md_always_convert'], false ) . ' /> All contents are markdown!'
+	public function print_always_convert_field() {
+		echo '<label for="gfm_always_convert"><input type="checkbox" id="gfm_always_convert" name="gfm_array[php_md_always_convert]" value="1" '
+			. checked( 1, $this->gfm_options['php_md_always_convert'], false ) . ' > All contents are markdown!</label>'
 			. '<p class="description">The plugin converts content even if it is not surrounded by [markdown]</p>';
 	}
 
@@ -290,22 +345,66 @@ class WP_GFM {
 	 * add_settings_field callback
 	 * @see add_settings_field
 	 */
-	public function print_gfm_php_md_use_autolink_field() {
-		echo '<input type="checkbox" id="gfm_php_md_use_autolink" name="gfm_array[php_md_use_autolink]" value="1" class="code" '
-			. checked( 1, $this->gfm_options['php_md_use_autolink'], false ) . ' /> Use AutoLink';
+	public function print_autolink_field() {
+		echo '<label for="gfm_autolink"><input id=gfm_autolink" type="checkbox" name="gfm_array[php_md_use_autolink]" value="1" class="code" '
+			. checked( 1, $this->gfm_options['php_md_use_autolink'], false ) . '> Use AutoLink</label>';
+	}
+
+	/**
+	 * add_settings_section callback
+	 * @see add_settings_section
+	 */
+	public function print_section_fenced_code_blocks() {
 	}
 
 	/**
 	 * add_settings_field callback
 	 * @see add_settings_field
 	 */
-	public function print_gfm_php_md_fenced_code_blocks_template_field() {
-		$value = esc_attr( $this->gfm_options['php_md_fenced_code_blocks_template'] );
-		echo '<textarea id="gfm_php_md_fenced_code_blocks_template" name="gfm_array[php_md_fenced_code_blocks_template]" class="large-text">' . $value . '</textarea>'
-			. '<p class="description">'
-			. '{{lang}}, {{title}}, {{codeblock}}<br/>'
-			. 'For <a href="https://code.google.com/p/google-code-prettify/" target="_blank" rel="noopener">google-code-prettify</a>: <code>' . esc_attr( self::FENCED_CODE_BLOCKS_TEMPLATE_FOR_GOOGLE_CODE_PRETTIFY ) . '</code><br/>'
-			. '</p>';
+	public function print_syntax_highlight_field() {
+		$value = $this->gfm_options['syntax_highlight'];
+		echo '<fieldset>';
+		foreach ( $this->syntax_highlight_libs as $option_value => $lib ) {
+			$checked = $value === $option_value ? ' checked="checked" ' : ' ';
+			echo '<p><label><input type="radio" name="gfm_array[syntax_highlight]" value="' . $option_value . '" ' . $checked . '> ' . $lib['name'] . "</label></p>\n";
+		}
+		echo '</fieldset>';
+	}
+
+	public function print_fenced_code_blocks_template_field() {
+		echo '<fieldset>';
+		echo '<label for="gfm_overwrite_fenced_code_blocks_template"><input type="checkbox" id="gfm_overwrite_fenced_code_blocks_template" name="gfm_array[overwrite_fenced_code_blocks_template]" value="1" class="code" '
+			 . checked( 1, $this->gfm_options['overwrite_fenced_code_blocks_template'], false ) . '> Overwrite HTML template</label>';
+		echo '</fieldset>';
+
+		$textarea_value = esc_attr( $this->gfm_options['php_md_fenced_code_blocks_template'] );
+		echo '<textarea id="gfm_fenced_code_blocks_template" name="gfm_array[php_md_fenced_code_blocks_template]" class="large-text" cols="" rows="5">' . $textarea_value . '</textarea>';
+		echo '<p class="description">';
+		echo 'You can use <code>{{lang}}</code>, <code>{{title}}</code>, <code>{{codeblock}}</code> as parameter.<br/>';
+		foreach ( $this->syntax_highlight_libs as $lib ) {
+			if ( isset( $lib['url'] ) ) {
+				echo '<a href="' . $lib['url'] . '" target="_blank" rel="noopener">' . $lib['name'] . '</a>: ';
+			} else {
+				echo $lib['name'] . ': ';
+			}
+			echo '<code>' . esc_attr( $lib['format'] ) . '</code><br/>';
+		}
+		echo '</p>';
+		echo '<script type="text/javascript">';
+		echo <<<'JS'
+(function ($) {
+	var $check = $('#gfm_overwrite_fenced_code_blocks_template');
+	var $textarea = $('#gfm_fenced_code_blocks_template');
+	function refresh_textarea() {
+		$textarea.attr('readonly', !$check.prop('checked'));
+	}
+	$check.change(function () {
+		refresh_textarea();
+	});
+	refresh_textarea();
+})(jQuery);
+JS;
+		echo '</script>';
 	}
 
 	/**

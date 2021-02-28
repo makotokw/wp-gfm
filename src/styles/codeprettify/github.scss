@@ -1,0 +1,59 @@
+// GitHub Theme
+@media screen {
+  .prettyprint {
+    .str { color: #dd1144; }
+    .kwd { color: #333333; }
+    .com { color: #999988; }
+    .typ { color: #445588; }
+    .lit { color: #445588; }
+    .pun { color: #333333; }
+    .pln { color: #333333; }
+    .opn { color: #333333; }
+    .clo { color: #333333; }
+    .tag { color: navy; }
+    .atn { color: teal; }
+    .atv { color: #dd1144; }
+    .dec { color: #333333; }
+    .var { color: teal; }
+    .fun { color: #990000; }
+  }
+}
+
+@media print, projection {
+  .prettyprint {
+    .str {
+      color: #060
+    }
+    .kwd {
+      color: #006;
+      font-weight: bold
+    }
+    .com {
+      color: #600;
+      font-style: italic
+    }
+    .typ {
+      color: #404;
+      font-weight: bold
+    }
+    .lit {
+      color: #044
+    }
+    .pun, .opn, .clo {
+      color: #440
+    }
+    .pln {
+      color: #000
+    }
+    .tag {
+      color: #006;
+      font-weight: bold
+    }
+    .atn {
+      color: #404
+    }
+    .atv {
+      color: #060
+    }
+  }
+}
