@@ -146,7 +146,7 @@ class WP_GFM {
 		$sh_lib = strtolower( $this->gfm_options['syntax_highlight'] );
 		if ( 'none' !== $sh_lib ) {
 			/** @noinspection PhpIncludeInspection */
-			$sh_asset = include( __DIR__ . "build/sh-{$sh_lib}.asset.php" );
+			$sh_asset = include( __DIR__ . "/build/sh-{$sh_lib}.asset.php" );
 			wp_enqueue_script( "wp-gfm-sh-{$sh_lib}", $this->url . "/build/sh-{$sh_lib}.js", false, $sh_asset['version'] );
 			wp_enqueue_style( "wp-gfm-sh-{$sh_lib}", $this->url . "/build/sh-{$sh_lib}.css", array(), $sh_asset['version'] );
 		}
