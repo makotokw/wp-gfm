@@ -344,6 +344,9 @@ class WP_GFM {
 
 
 	function admin_quicktags() {
+		if ( ! wp_script_is( 'quicktags' ) ) {
+			return;
+		}
 		// http://wordpress.stackexchange.com/questions/37849/add-custom-shortcode-button-to-editor
 		/* Add custom Quicktag buttons to the editor Wordpress ver. 3.3 and above only
 		 *
@@ -356,18 +359,17 @@ class WP_GFM {
 		 * - Title, title="" attribute (optional)
 		 * - Priority/position on bar, 1-9 = first, 11-19 = second, 21-29 = third, etc. (optional)
 		 */
-		?>
-		<script type="text/javascript">
+		$script = <<<'JS'
 			(function ($) {
 				if (typeof(QTags) != 'undefined') {
-					var ids = ['markdown', 'gfm'];
+					const ids = ['markdown', 'gfm'];
 					$.each(ids, function (index, c) {
 						QTags.addButton(c, '[' + c + ']', '[' + c + ']', '[/' + c + ']');
 					});
 				}
 			})(jQuery);
-		</script>
-	<?php
+		JS;
+		wp_add_inline_script( 'quicktags', $script );
 	}
 }
 
