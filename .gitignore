@@ -3,10 +3,14 @@ node_modules/
 .sass-cache/
 .DS_Store
 
+vendor/bin
+
 vendor/*/*/.*
 vendor/*/*/test
 vendor/*/*/phpunit.xml*
 
 vendor/dealerdirect/phpcodesniffer-composer-installer
+vendor/phpcsstandards
 vendor/squizlabs/php_codesniffer
 vendor/wp-coding-standards/wpcs
+
