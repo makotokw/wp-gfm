@@ -6,27 +6,41 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit9facfe8654e0f473520ec5a6fb803482
 {
-    public static $prefixesPsr0 = array (
-        'M' => 
+    public static $prefixLengthsPsr4 = array (
+        'M' =>
         array (
-            'Michelf' => 
-            array (
-                0 => __DIR__ . '/..' . '/michelf/php-markdown',
-            ),
+            'Michelf\\' => 8,
         ),
-        'G' => 
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'Michelf\\' =>
         array (
-            'Gfm\\Markdown\\' => 
+            0 => __DIR__ . '/..' . '/michelf/php-markdown/Michelf',
+        ),
+    );
+
+    public static $prefixesPsr0 = array (
+        'G' =>
+        array (
+            'Gfm\\Markdown\\' =>
             array (
                 0 => __DIR__ . '/../..' . '/src',
             ),
         ),
     );
 
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixLengthsPsr4 = ComposerStaticInit9facfe8654e0f473520ec5a6fb803482::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit9facfe8654e0f473520ec5a6fb803482::$prefixDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInit9facfe8654e0f473520ec5a6fb803482::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit9facfe8654e0f473520ec5a6fb803482::$classMap;
 
         }, null, ClassLoader::class);
     }

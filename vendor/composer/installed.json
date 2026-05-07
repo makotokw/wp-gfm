@@ -1,55 +1,65 @@
-[
-    {
-        "name": "michelf/php-markdown",
-        "version": "1.7.0",
-        "version_normalized": "1.7.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/michelf/php-markdown.git",
-            "reference": "1f51cc520948f66cd2af8cbc45a5ee175e774220"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/michelf/php-markdown/zipball/1f51cc520948f66cd2af8cbc45a5ee175e774220",
-            "reference": "1f51cc520948f66cd2af8cbc45a5ee175e774220",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.0"
-        },
-        "time": "2016-10-29 18:58:20",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-lib": "1.4.x-dev"
-            }
-        },
-        "installation-source": "source",
-        "autoload": {
-            "psr-0": {
-                "Michelf": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
+{
+        "packages": [
+                {
+                        "name": "michelf/php-markdown",
+                        "version": "2.0.0",
+                        "version_normalized": "2.0.0.0",
+                        "source": {
+                                "type": "git",
+                                "url": "https://github.com/michelf/php-markdown.git",
+                                "reference": "eb176f173fbac58a045aff78e55f833264b34e71"
+                        },
+                        "dist": {
+                                "type": "zip",
+                                "url": "https://api.github.com/repos/michelf/php-markdown/zipball/eb176f173fbac58a045aff78e55f833264b34e71",
+                                "reference": "eb176f173fbac58a045aff78e55f833264b34e71",
+                                "shasum": ""
+                        },
+                        "require": {
+                                "php": ">=7.4"
+                        },
+                        "require-dev": {
+                                "friendsofphp/php-cs-fixer": "^3.0",
+                                "phpstan/phpstan": ">=1.0",
+                                "phpstan/phpstan-phpunit": ">=1.0",
+                                "phpunit/phpunit": "^9.5"
+                        },
+                        "time": "2022-09-26T12:21:08+00:00",
+                        "type": "library",
+                        "installation-source": "source",
+                        "autoload": {
+                                "psr-4": {
+                                        "Michelf\\": "Michelf/"
+                                }
+                        },
+                        "notification-url": "https://packagist.org/downloads/",
+                        "license": [
+                                "BSD-3-Clause"
+                        ],
+                        "authors": [
+                                {
+                                        "name": "Michel Fortin",
+                                        "email": "michel.fortin@michelf.ca",
+                                        "homepage": "https://michelf.ca/",
+                                        "role": "Developer"
+                                },
+                                {
+                                        "name": "John Gruber",
+                                        "homepage": "https://daringfireball.net/"
+                                }
+                        ],
+                        "description": "PHP Markdown",
+                        "homepage": "https://michelf.ca/projects/php-markdown/",
+                        "keywords": [
+                                "markdown"
+                        ],
+                        "support": {
+                                "issues": "https://github.com/michelf/php-markdown/issues",
+                                "source": "https://github.com/michelf/php-markdown/tree/2.0.0"
+                        },
+                        "install-path": "../michelf/php-markdown"
+                }
         ],
-        "authors": [
-            {
-                "name": "Michel Fortin",
-                "email": "michel.fortin@michelf.ca",
-                "homepage": "https://michelf.ca/",
-                "role": "Developer"
-            },
-            {
-                "name": "John Gruber",
-                "homepage": "https://daringfireball.net/"
-            }
-        ],
-        "description": "PHP Markdown",
-        "homepage": "https://michelf.ca/projects/php-markdown/",
-        "keywords": [
-            "markdown"
-        ]
-    }
-]
+        "dev": true,
+        "dev-package-names": []
+}

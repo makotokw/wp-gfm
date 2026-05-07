@@ -1,4 +1,7 @@
 <?php
+
+/** @noinspection RegExpRedundantEscape */
+
 namespace Gfm\Markdown;
 
 use Michelf\MarkdownExtra;
@@ -61,10 +64,6 @@ class Extra extends MarkdownExtra
 		self::$elementCounts = array();
 	}
 
-	protected function teardown() {
-		parent::teardown();
-	}
-
 	protected function markTableOfContents( $text ) {
 		if ( preg_match( '/^\[(|>)TOC\]$/i', $text, $tocMatches ) ) {
 			$block = ( '' == $tocMatches[1] ) ? 'LTOC' : 'RTOC';
@@ -85,14 +84,14 @@ class Extra extends MarkdownExtra
 		#     * Headings must have an ID
 		#     * Builds TOC with headings _after_ the [TOC] tag
 
-		if ( preg_match( '/(L|R)TOC[\w]{40}/mi', $text, $tocMatches, PREG_OFFSET_CAPTURE ) ) {
+		if ( preg_match( '/([LR])TOC\w{40}/mi', $text, $tocMatches, PREG_OFFSET_CAPTURE ) ) {
 			$mark = $tocMatches[0][0];
 			$toc = '';
 			if ( preg_match_all( '/<h([2-6]) id="([0-9a-z_-]+)">(.*?)<\/h\1>/i', $text, $headers, PREG_SET_ORDER, $tocMatches[0][1] ) ) {
 				$alignCls = 'R' == $tocMatches[1][0] ? 'right' : 'left';
 				$cls = self::getElementCssPrefix();
 				$toc .= <<<"EOF"
-<div class="{$cls}toc-content {$alignCls}">
+<div class="{$cls}toc-content $alignCls">
 EOF;
 				$prevLevel = 0;
 				foreach ( $headers as $header ) {
@@ -153,7 +152,7 @@ EOF;
 		#   ...
 		#   ###### Header 6   {#header2}
 		#
-		$text = preg_replace_callback(
+		return preg_replace_callback(
 			'{
 				 ^(\#{1,6})  # $1 = string of #\'s
 				 [ ]*
@@ -166,7 +165,6 @@ EOF;
 			array( $this, '_doHeaders_callback_atx' ),
 			$text
 		);
-		return $text;
 	}
 
 	protected function _doHeaders_attr( $attr ) {
@@ -180,15 +178,15 @@ EOF;
 		if ( '-' == $matches[3] && preg_match( '{^- }', $matches[1] ) ) {
 			return $matches[0];
 		}
-		$level = '=' == $matches[3]{0}  ? 1 : 2;
-		$attr = $this->_doHeaders_attr( $id =& $matches[2] );
+		$level = '=' == $matches[3][0] ? 1 : 2;
+		$attr = $this->_doHeaders_attr( $matches[2] );
 		$block = "<h$level$attr>" . $this->runSpanGamut( $matches[1] ) . "</h$level>";
 		return "\n" . $this->hashBlock( $block ) . "\n\n";
 	}
 
 	protected function _doHeaders_callback_atx( $matches ) {
 		$level = strlen( $matches[1] );
-		$attr = isset($matches[3]) ? $matches[3] : '';
+		$attr = $matches[3] ?? '';
 		if ( empty( $attr ) ) {
 			$attr = '#' . $this->createElementId();
 		} else {
@@ -208,12 +206,11 @@ EOF;
 	}
 
 	protected function doAutoLinksExtra( $text ) {
-		$text = preg_replace_callback(
+		return preg_replace_callback(
 			'{((https?|ftp)://[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|])}i',
 			array( $this, '_doAutoLinks__extra_url_callback' ),
 			$text
 		);
-		return $text;
 	}
 
 	protected function _doAutoLinks__extra_url_callback( $matches ) {
@@ -230,7 +227,7 @@ EOF;
 		# Code block
 		# ```
 		#
-		$text = preg_replace_callback('{
+		return preg_replace_callback('{
 				(?:\n|\A)
 				# 1: Opening marker three `.
 				(`{3})
@@ -252,8 +249,6 @@ EOF;
 			array( $this, '_doFencedCodeBlocks_callback' ),
 			$text
 		);
-
-		return $text;
 	}
 
 	protected function _doFencedCodeBlocks_callback( $matches ) {
