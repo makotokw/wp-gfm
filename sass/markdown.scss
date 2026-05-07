@@ -1,8 +1,5 @@
-@import 'compass/utilities/general';
-
-@import 'vars';
-@import 'typography';
-@import 'toc';
-@import 'footer';
-@import 'embed';
-@import 'responsive';
+@use 'typography';
+@use 'toc';
+@use 'footer';
+@use 'embed';
+@use 'responsive';

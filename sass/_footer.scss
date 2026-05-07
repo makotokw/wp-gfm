@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 .wp-gfm-footer {
   margin: 5px 0;
   @include pie-clearfix;

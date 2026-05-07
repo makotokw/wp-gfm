@@ -6,11 +6,11 @@
     "type": "git",
     "url": "https://github.com/makotokw/wp-gfm"
   },
+  "scripts": {
+    "build": "sass sass/markdown.scss css/markdown.css --style=expanded --no-source-map",
+    "watch": "sass sass/markdown.scss css/markdown.css --style=expanded --no-source-map --watch"
+  },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-compass": "~0.5.0",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-exec": "^0.4.5",
-    "load-grunt-tasks": "~0.4.0"
+    "sass": "^1.89.0"
   }
 }
