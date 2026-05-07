@@ -1,11 +1,11 @@
 # GitHub Flavored Markdown for WordPress
 
-wp-gfm is the WordPress plugin that convert from GitHub Flavored Markdown by using the PHP-Markdown or [GitHub Render API](http://developer.github.com/v3/markdown/).
+wp-gfm is the WordPress plugin that converts from GitHub Flavored Markdown by using the PHP-Markdown or [GitHub Render API](http://developer.github.com/v3/markdown/).
 
 ## Dependencies
 
- * WordPress 3.1+
- * PHP 5.3+
+ * WordPress 5.0+
+ * PHP 7.4+
  * Optional: Render API: [GitHub Render API](http://developer.github.com/v3/markdown/) or https://github.com/makotokw/ruby-markdown-render-api
 
 ## How to work
@@ -14,7 +14,7 @@ The plugin has two conversions.
 
 ``[markdown]`` as shortcode for PHP-Markdown, convert by using ``\Michelf\Markdown`` class **inside WordPress**.
 
-``[gfm]`` as shortcode for GitHub Flavored Markdown, convert by using the Render API **outside WordPress**. Default Render API is GitHub Render API, limits requests to 60 per hour for unauthenticated requests. Alternatives Render API that works on heroku is here: https://github.com/makotokw/ruby-markdown-render-api
+``[gfm]`` as shortcode for GitHub Flavored Markdown, convert by using the Render API **outside WordPress**. Default Render API is GitHub Render API, limits requests to 60 per hour for unauthenticated requests. Alternative Render API that works on heroku is here: https://github.com/makotokw/ruby-markdown-render-api
 
 
 ## Installation
@@ -23,7 +23,7 @@ Download from https://github.com/makotokw/wp-gfm/releases and upload to /path/to
 
 ## PHP-Markdown (Recommended)
 
-This conversion depends on [PHP Markdown Lib 1.7.0](http://michelf.ca/projects/php-markdown/).
+This conversion depends on [PHP Markdown Lib 2.0.0](http://michelf.ca/projects/php-markdown/).
 
 ### Usage
 
@@ -76,7 +76,7 @@ Example:
 
 #### Embed content
 
-Supported embed markdown file by ``[embed_markdown]`` shortcode.
+Supported an embed Markdown file by ``[embed_markdown]`` shortcode.
 
 ```
 [embed_markdown url="https://raw.githubusercontent.com/makotokw/wp-gfm/master/README.md"]
@@ -101,7 +101,7 @@ You can use [google-code-prettify](https://code.google.com/p/google-code-prettif
 
 ## GitHub Render API
 
-This way is not good. If there are 5 shortcodes in page, the plugin require 5 HTTP requests.
+This way is not good. If there are 5 shortcodes in page, the plugin requires 5 HTTP requests.
 
 ### Setup
 
