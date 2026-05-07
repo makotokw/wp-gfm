@@ -1,21 +1,15 @@
 # GitHub Flavored Markdown for WordPress
 
-wp-gfm is the WordPress plugin that converts from GitHub Flavored Markdown by using the PHP-Markdown or [GitHub Render API](http://developer.github.com/v3/markdown/).
+wp-gfm is the WordPress plugin that converts from GitHub Flavored Markdown by using the PHP-Markdown.
 
 ## Dependencies
 
  * WordPress 5.0+
  * PHP 7.4+
- * Optional: Render API: [GitHub Render API](http://developer.github.com/v3/markdown/) or https://github.com/makotokw/ruby-markdown-render-api
 
 ## How to work
 
-The plugin has two conversions.
-
 ``[markdown]`` as shortcode for PHP-Markdown, convert by using ``\Michelf\Markdown`` class **inside WordPress**.
-
-``[gfm]`` as shortcode for GitHub Flavored Markdown, convert by using the Render API **outside WordPress**. Default Render API is GitHub Render API, limits requests to 60 per hour for unauthenticated requests. Alternative Render API that works on heroku is here: https://github.com/makotokw/ruby-markdown-render-api
-
 
 ## Installation
 
@@ -98,40 +92,6 @@ puts markdown.to_html
 ```
 
 You can use [google-code-prettify](https://code.google.com/p/google-code-prettify/) if you want to allow syntax highlighting.
-
-## GitHub Render API
-
-This way is not good. If there are 5 shortcodes in page, the plugin requires 5 HTTP requests.
-
-### Setup
-
- * Open ``WP GFM`` Settings and set ``Render URL``
-
-
-### Usage
-
-Use ``[gfm][/gfm]`` as shortcode on entry.
-
-    [gfm]
-    ```ruby
-    require 'redcarpet'
-    markdown = Redcarpet.new("Hello World!")
-    puts markdown.to_html
-    ```
-    [/gfm]
-
-
-## Result
-
-![Result](https://raw.githubusercontent.com/makotokw/wp-gfm/master/screenshot-1.png)
-
-
-## Development
-
-```
-npm install
-grunt debug
-```
 
 ## LICENSE
 
