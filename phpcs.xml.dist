@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ruleset name="WP-GFM">
+    <description>PHP CodeSniffer configuration for WP-GFM plugin.</description>
+
+    <arg name="extensions" value="php"/>
+    <arg name="report-width" value="200"/>
+    <arg value="sp"/>
+
+    <file>.</file>
+
+    <!-- Third-party: WP_GitHub_Updater by Joachim Kudish -->
+    <exclude-pattern>updater.php</exclude-pattern>
+    <!-- Extends Michelf\MarkdownExtra, not WordPress conventions -->
+    <exclude-pattern>src/Gfm/Markdown/Extra.php</exclude-pattern>
+    <exclude-pattern>/vendor/*</exclude-pattern>
+    <exclude-pattern>/node_modules/*</exclude-pattern>
+
+    <rule ref="WordPress-Extra">
+        <exclude name="WordPress.Files.FileName"/>
+    </rule>
+
+    <config name="minimum_wp_version" value="5.0"/>
+</ruleset>

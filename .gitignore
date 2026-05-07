@@ -6,3 +6,7 @@ node_modules/
 vendor/*/*/.*
 vendor/*/*/test
 vendor/*/*/phpunit.xml*
+
+vendor/dealerdirect/phpcodesniffer-composer-installer
+vendor/squizlabs/php_codesniffer
+vendor/wp-coding-standards/wpcs

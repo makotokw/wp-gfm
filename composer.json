@@ -7,13 +7,28 @@
       "email": "makoto.kw@gmail.com"
     }
   ],
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  },
   "require": {
     "php": ">=7.4",
     "michelf/php-markdown": "2.0.0"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "squizlabs/php_codesniffer": "^3.7",
+    "wp-coding-standards/wpcs": "^3.0"
   },
   "autoload": {
     "psr-0": {
       "Gfm\\Markdown\\": "src/"
     }
+  },
+  "scripts": {
+    "phpcs": "phpcs",
+    "phpcbf": "phpcbf"
   }
 }

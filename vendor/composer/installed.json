@@ -60,6 +60,6 @@
                         "install-path": "../michelf/php-markdown"
                 }
         ],
-        "dev": true,
+        "dev": false,
         "dev-package-names": []
 }

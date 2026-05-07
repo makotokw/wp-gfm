@@ -6,18 +6,18 @@ namespace Gfm\Markdown;
 
 use Michelf\MarkdownExtra;
 
-class Extra extends MarkdownExtra
-{
-	public static $useAutoLinkExtras = false;
+class Extra extends MarkdownExtra {
+
+	public static $useAutoLinkExtras        = false;
 	public static $fencedCodeBlocksTemplate = '<pre class="prettyprint lang-{{lang}}" title="{{title}}">{{codeblock}}</pre>';
 
-	static protected $elementCssPrefix = 'gfm-';
-	static protected $elementIdPrefix = 'gfm-';
-	static protected $elementCounts = array();
+	protected static $elementCssPrefix = 'gfm-';
+	protected static $elementIdPrefix  = 'gfm-';
+	protected static $elementCounts    = array();
 
 	public function __construct() {
 		parent::__construct();
-		$this->span_gamut['markTableOfContents'] = 5;
+		$this->span_gamut['markTableOfContents']   = 5;
 		$this->document_gamut['doTableOfContents'] = 50;
 	}
 
@@ -56,7 +56,7 @@ class Extra extends MarkdownExtra
 		if ( ! array_key_exists( self::$elementIdPrefix, self::$elementCounts ) ) {
 			self::$elementCounts[ self::$elementIdPrefix ] = 0;
 		}
-		self::$elementCounts[ self::$elementIdPrefix ]++;
+		++self::$elementCounts[ self::$elementIdPrefix ];
 		return self::$elementIdPrefix . self::$elementCounts[ self::$elementIdPrefix ];
 	}
 
@@ -67,54 +67,54 @@ class Extra extends MarkdownExtra
 	protected function markTableOfContents( $text ) {
 		if ( preg_match( '/^\[(|>)TOC\]$/i', $text, $tocMatches ) ) {
 			$block = ( '' == $tocMatches[1] ) ? 'LTOC' : 'RTOC';
-			$hash = sha1( time() );
+			$hash  = sha1( time() );
 			return $block . $hash;
 		}
 		return $text;
 	}
 
 	protected function doTableOfContents( $text ) {
-		#
-		# Adds TOC support by including the following on a single line:
-		#
-		# [TOC]
-		#
-		# TOC Requirements:
-		#     * Only headings 2-6
-		#     * Headings must have an ID
-		#     * Builds TOC with headings _after_ the [TOC] tag
+		//
+		// Adds TOC support by including the following on a single line:
+		//
+		// [TOC]
+		//
+		// TOC Requirements:
+		// * Only headings 2-6
+		// * Headings must have an ID
+		// * Builds TOC with headings _after_ the [TOC] tag
 
 		if ( preg_match( '/([LR])TOC\w{40}/mi', $text, $tocMatches, PREG_OFFSET_CAPTURE ) ) {
 			$mark = $tocMatches[0][0];
-			$toc = '';
+			$toc  = '';
 			if ( preg_match_all( '/<h([2-6]) id="([0-9a-z_-]+)">(.*?)<\/h\1>/i', $text, $headers, PREG_SET_ORDER, $tocMatches[0][1] ) ) {
-				$alignCls = 'R' == $tocMatches[1][0] ? 'right' : 'left';
-				$cls = self::getElementCssPrefix();
-				$toc .= <<<"EOF"
+				$alignCls  = 'R' == $tocMatches[1][0] ? 'right' : 'left';
+				$cls       = self::getElementCssPrefix();
+				$toc      .= <<<"EOF"
 <div class="{$cls}toc-content $alignCls">
 EOF;
 				$prevLevel = 0;
 				foreach ( $headers as $header ) {
-					$level = (int) $header[1] - 1; // 2-origin to 1-origin
+					$level    = (int) $header[1] - 1; // 2-origin to 1-origin
 					$anchorId = $header[2];
-					$label = $header[3];
+					$label    = $header[3];
 					if ( $prevLevel < $level ) {
 						for ( $i = 0; $prevLevel + $i < $level; $i++ ) {
 							$toc .= '<ul>';
 						}
-					} else if ( $prevLevel > $level ) {
+					} elseif ( $prevLevel > $level ) {
 						for ( $i = 0; $prevLevel - $i > $level; $i++ ) {
 							$toc .= '</ul>';
 						}
 					}
-					$toc .= '<li><a href="#' . $anchorId . '">' . htmlspecialchars( $label ) . '</a></li>' . PHP_EOL;
+					$toc      .= '<li><a href="#' . $anchorId . '">' . htmlspecialchars( $label ) . '</a></li>' . PHP_EOL;
 					$prevLevel = $level;
 				}
 				while ( $prevLevel > 0 ) {
 					$toc .= '</ul>';
-					$prevLevel--;
+					--$prevLevel;
 				}
-				$toc .= <<<"EOF"
+				$toc .= <<<'EOF'
 </div>
 EOF;
 			}
@@ -125,16 +125,16 @@ EOF;
 	}
 
 	protected function doHeaders( $text ) {
-		#
-		# Redefined to add id attribute support.
-		#
-		# Setext-style headers:
-		#     Header 1  {#header1}
-		#     ========
-		#
-		#     Header 2  {#header2}
-		#     --------
-		#
+		//
+		// Redefined to add id attribute support.
+		//
+		// Setext-style headers:
+		// Header 1  {#header1}
+		// ========
+		//
+		// Header 2  {#header2}
+		// --------
+		//
 		$text = preg_replace_callback(
 			'{
 				(^.+?)                              # $1: Header text
@@ -145,13 +145,13 @@ EOF;
 			$text
 		);
 
-		# atx-style headers:
-		#   # Header 1        {#header1}
-		#   ## Header 2       {#header2}
-		#   ## Header 2 with closing hashes ##  {#header3}
-		#   ...
-		#   ###### Header 6   {#header2}
-		#
+		// atx-style headers:
+		// Header 1        {#header1}
+		// Header 2       {#header2}
+		// Header 2 with closing hashes ##  {#header3}
+		// ...
+		// Header 6   {#header2}
+		//
 		return preg_replace_callback(
 			'{
 				 ^(\#{1,6})  # $1 = string of #\'s
@@ -179,20 +179,20 @@ EOF;
 			return $matches[0];
 		}
 		$level = '=' == $matches[3][0] ? 1 : 2;
-		$attr = $this->_doHeaders_attr( $matches[2] );
+		$attr  = $this->_doHeaders_attr( $matches[2] );
 		$block = "<h$level$attr>" . $this->runSpanGamut( $matches[1] ) . "</h$level>";
 		return "\n" . $this->hashBlock( $block ) . "\n\n";
 	}
 
 	protected function _doHeaders_callback_atx( $matches ) {
 		$level = strlen( $matches[1] );
-		$attr = $matches[3] ?? '';
+		$attr  = $matches[3] ?? '';
 		if ( empty( $attr ) ) {
 			$attr = '#' . $this->createElementId();
 		} else {
 			$attr = '#' . $attr;
 		}
-		$attr = $this->doExtraAttributes( "h$level", $attr );
+		$attr  = $this->doExtraAttributes( "h$level", $attr );
 		$block = "<h$level$attr>" . $this->runSpanGamut( $matches[2] ) . "</h$level>";
 		return "\n" . $this->hashBlock( $block ) . "\n\n";
 	}
@@ -214,20 +214,21 @@ EOF;
 	}
 
 	protected function _doAutoLinks__extra_url_callback( $matches ) {
-		$url = $this->encodeAttribute( $matches[1] );
+		$url  = $this->encodeAttribute( $matches[1] );
 		$link = '<a href="' . $url . '">' . $url . '</a>';
 		return $this->hashPart( $link );
 	}
 
 	protected function doFencedCodeBlocks( $text ) {
-		#
-		# Adding the Gfm code block syntax to regular Markdown:
-		#
-		# ```
-		# Code block
-		# ```
-		#
-		return preg_replace_callback('{
+		//
+		// Adding the Gfm code block syntax to regular Markdown:
+		//
+		// ```
+		// Code block
+		// ```
+		//
+		return preg_replace_callback(
+			'{
 				(?:\n|\A)
 				# 1: Opening marker three `.
 				(`{3})
@@ -252,12 +253,12 @@ EOF;
 	}
 
 	protected function _doFencedCodeBlocks_callback( $matches ) {
-		$option = $matches[2];
+		$option     = $matches[2];
 		$code_block = $matches[3];
 
 		$option = explode( ':', $option );
-		$lang = $option[0];
-		$title = ( count( $option ) >= 2 ) ? $option[1] : '';
+		$lang   = $option[0];
+		$title  = ( count( $option ) >= 2 ) ? $option[1] : '';
 
 		$code_block = htmlspecialchars( $code_block, ENT_NOQUOTES );
 
@@ -285,7 +286,7 @@ EOF;
 		$code_block = $this->outdent( $code_block );
 		$code_block = htmlspecialchars( $code_block, ENT_NOQUOTES );
 
-		# trim leading newlines and trailing newlines
+		// trim leading newlines and trailing newlines
 		$code_block = preg_replace( '/\A\n+|\n+\z/', '', $code_block );
 
 		$block = $this->applyCodeBlockTemplate( '', '', $code_block );
@@ -314,13 +315,16 @@ EOF;
 			}
 		}
 
-		foreach ( array( 'lang' => $lang, 'title' => $title ) as $name => $value ) {
+		foreach ( array(
+			'lang'  => $lang,
+			'title' => $title,
+		) as $name => $value ) {
 			if ( is_null( $value ) ) {
 				$value = '';
 			}
-			$name = '{{' . $name . '}}';
+			$name   = '{{' . $name . '}}';
 			$before = str_replace( $name, $value, $before );
-			$after = str_replace( $name, $value, $after );
+			$after  = str_replace( $name, $value, $after );
 		}
 
 		return $before . $codeblock . $after;
